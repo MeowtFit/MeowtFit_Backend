@@ -16,8 +16,6 @@ CREATE TABLE Usuario (
     idUsuario          INT PRIMARY KEY AUTO_INCREMENT,
     -- campos comunes a todos los roles
     nombres            VARCHAR(100) NOT NULL,
-    apellidos          VARCHAR(100),
-    dni                VARCHAR(20) UNIQUE,
     correo             VARCHAR(100) UNIQUE NOT NULL,
     contrasena         VARCHAR(255) NOT NULL,
     telefono           VARCHAR(20),

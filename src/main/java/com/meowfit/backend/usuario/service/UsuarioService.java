@@ -89,7 +89,12 @@ public class UsuarioService {
                 usuario.setTelefono(dto.getTelefono());
                 usuario.setCorreo(dto.getCorreo());
                 usuario.setRol(dto.getRol());
-
+                usuario.setDni(dto.getDni());
+                usuario.setFechaNacimiento(dto.getFechaNacimiento());
+                usuario.setDireccionEnvio(dto.getDireccionEnvio());
+                usuario.setRuc(dto.getRuc());
+                usuario.setRazonSocial(dto.getRazonSocial());
+                usuario.setTelefono2(dto.getTelefono2());
                 Usuario guardado = usuarioRepository.save(usuario);
                 return usuarioMapper.ToDTO(guardado);
         }

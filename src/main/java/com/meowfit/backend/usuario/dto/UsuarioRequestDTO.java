@@ -1,5 +1,6 @@
 package com.meowfit.backend.usuario.dto;
 
+import java.time.LocalDate;
 import com.meowfit.backend.usuario.entity.Usuario.Rol;
 
 import jakarta.validation.constraints.Email;
@@ -36,5 +37,23 @@ public class UsuarioRequestDTO {
     // BCrypt en el service
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String contrasena;
+
+    // Campos de ClienteB2C
+    @Size(max = 20, message = "El DNI no puede superar los 20 caracteres")
+    private String dni;
+
+    private LocalDate fechaNacimiento;
+
+    private String direccionEnvio;
+
+    // Campos de ClienteB2B
+    @Size(max = 20, message = "El RUC no puede superar los 20 caracteres")
+    private String ruc;
+
+    @Size(max = 150, message = "La razón social no puede superar los 150 caracteres")
+    private String razonSocial;
+
+    @Size(max = 20, message = "El teléfono 2 no puede superar los 20 caracteres")
+    private String telefono2;
 
 }

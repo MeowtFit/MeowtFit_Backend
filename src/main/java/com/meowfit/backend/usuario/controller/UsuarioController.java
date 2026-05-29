@@ -34,6 +34,12 @@ public class UsuarioController {
         return usuarioService.ListarTodos();
     }
 
+    // Lista solo los usuarios con rol COMERCIANTE
+    @GetMapping("/comerciantes")
+    public List<UsuarioDTO> ListarComerciantes() {
+        return usuarioService.ListarComerciantes();
+    }
+
     // Obtiene un usuario por su ID
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> BuscarPorId(@PathVariable Long id) {

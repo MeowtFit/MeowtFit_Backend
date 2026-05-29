@@ -34,6 +34,14 @@ public class UsuarioService {
                                 .toList();
         }
 
+        // Lista solo los usuarios con rol COMERCIANTE
+        public List<UsuarioDTO> ListarComerciantes() {
+                return usuarioRepository.findByRol(Usuario.Rol.COMERCIANTE)
+                                .stream()
+                                .map(usuarioMapper::ToDTO)
+                                .toList();
+        }
+
         // Busca un usuario por su ID
         public UsuarioDTO BuscarPorId(Long id) {
                 Usuario usuario = usuarioRepository.findById(id)

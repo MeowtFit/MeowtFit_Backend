@@ -1,5 +1,5 @@
  -- Descomentar el drop después de la primera corrida
- -- DROP DATABASE meowfit;
+ DROP DATABASE meowfit;
  CREATE DATABASE meowfit;
  USE meowfit;
 -- Tabla: Usuario 
@@ -9,7 +9,7 @@ CREATE TABLE Usuario (
     correo VARCHAR(100) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
     telefono VARCHAR(20),
-    estadoCuenta BOOLEAN DEFAULT TRUE,
+    estadoCuenta ENUM('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
 	fechaCreacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fechaActualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     rol ENUM('ADMINISTRADOR','COMERCIANTE', 'CLIENTE') NOT NULL DEFAULT 'CLIENTE'
@@ -51,7 +51,7 @@ CREATE TABLE Producto (
     idProducto INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(150) NOT NULL,
     precioBase DECIMAL(10, 2) NOT NULL,
-    estado VARCHAR(20) DEFAULT 'Activo',
+    estado ENUM('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
     descripcion TEXT,
     idCategoria INT NOT NULL,
     FOREIGN KEY (idCategoria) REFERENCES Categoria(idCategoria)
@@ -72,7 +72,7 @@ CREATE TABLE VarianteProducto (
 CREATE TABLE Pedido (
     idPedido INT PRIMARY KEY AUTO_INCREMENT,
     fechaHoraRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('Registrado', 'Confirmado', 'Enviado', 'Entregado') DEFAULT 'Registrado',
+    estado ENUM('REGISTRADO', 'CONFIRMADO', 'ENVIADO', 'ENTREGADO') DEFAULT 'REGISTRADO',
     montoTotal DECIMAL(10, 2) NOT NULL,
     metodoPago VARCHAR(50),
     descuento DECIMAL(10, 2) DEFAULT 0,
@@ -100,7 +100,7 @@ CREATE TABLE LineaPedido (
 CREATE TABLE Carrito (
     idCarrito INT PRIMARY KEY AUTO_INCREMENT,
     fechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado VARCHAR(20) DEFAULT 'Activo',
+    estado ENUM('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
     idUsuario INT NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
 );
@@ -138,7 +138,7 @@ CREATE TABLE ReglaDescuento (
 CREATE TABLE Cotizacion (
     idCotizacion INT PRIMARY KEY AUTO_INCREMENT,
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado VARCHAR(30) DEFAULT 'Pendiente',
+    estado ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') DEFAULT 'PENDIENTE',
     precioPresupuesto DECIMAL(10, 2),
     comentario TEXT,
     idUsuario INT NOT NULL,

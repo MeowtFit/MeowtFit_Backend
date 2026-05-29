@@ -1,12 +1,11 @@
 package com.meowfit.backend.usuario.entity;
 
 import java.time.LocalDateTime;
-
 // Importaciones existentes:
-import java.time.LocalDateTime;
 import java.time.LocalDate;           // Para fechaNacimiento (tipo DATE)
-import org.springframework.data.annotation.LastModifiedDate;  // Para fechaActualizacion
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.meowfit.backend.common.Estado;
 
@@ -18,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,11 @@
 package com.meowfit.backend.usuario.entity;
 
 import java.time.LocalDateTime;
-
+// Importaciones existentes:
+import java.time.LocalDate;           // Para fechaNacimiento (tipo DATE)
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.meowfit.backend.common.Estado;
 
@@ -14,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "usuario")
+// La tabla se coloca en mayúsculas pq así está en la BD
+@Table(name = "Usuario")
 public class Usuario {
 
     @Id
@@ -62,4 +68,29 @@ public class Usuario {
     public enum Rol {
         ADMINISTRADOR, COMERCIANTE, CLIENTE
     }
+
+    // Campos de ClienteB2C (null si no es CLIENTE o es B2B)
+    @Column(name = "dni", unique = true, length = 20)
+    private String dni;
+
+    @Column(name = "fechaNacimiento")
+    private LocalDate fechaNacimiento;
+
+    @Column(name = "direccionEnvio", columnDefinition = "TEXT")
+    private String direccionEnvio;
+
+    // Campos de ClienteB2B (null si no es CLIENTE o es B2C)
+    @Column(name = "ruc", unique = true, length = 20)
+    private String ruc;
+
+    @Column(name = "razonSocial", length = 150)
+    private String razonSocial;
+
+    @Column(name = "telefono2", length = 20)
+    private String telefono2;
+
+    // Campo faltante
+    @Column(name = "fechaActualizacion")
+    @LastModifiedDate
+    private LocalDateTime fechaActualizacion;
 }

@@ -20,6 +20,14 @@ public class UsuarioMapper {
         dto.setFechaCreacion(usuario.getFechaCreacion());
         dto.setEstadoCuenta(usuario.getEstado());
         dto.setRol(usuario.getRol());
+        // Nuevos campos
+        dto.setDni(usuario.getDni());
+        dto.setFechaNacimiento(usuario.getFechaNacimiento());
+        dto.setDireccionEnvio(usuario.getDireccionEnvio());
+        dto.setRuc(usuario.getRuc());
+        dto.setRazonSocial(usuario.getRazonSocial());
+        dto.setTelefono2(usuario.getTelefono2());
+        dto.setFechaActualizacion(usuario.getFechaActualizacion());
         return dto;
     }
 
@@ -30,6 +38,14 @@ public class UsuarioMapper {
         usuario.setTelefono(dto.getTelefono());
         usuario.setCorreo(dto.getCorreo());
         usuario.setRol(dto.getRol());
+        // Nuevos campos
+        usuario.setDni(dto.getDni());
+        usuario.setFechaNacimiento(dto.getFechaNacimiento());
+        usuario.setDireccionEnvio(dto.getDireccionEnvio());
+        usuario.setRuc(dto.getRuc());
+        usuario.setRazonSocial(dto.getRazonSocial());
+        usuario.setTelefono2(dto.getTelefono2());
+        usuario.setFechaActualizacion(dto.getFechaActualizacion());
         return usuario;
     }
 
@@ -40,6 +56,13 @@ public class UsuarioMapper {
         usuario.setTelefono(dto.getTelefono());
         usuario.setCorreo(dto.getCorreo());
         usuario.setRol(dto.getRol());
+        // Nuevos campos
+        usuario.setDni(dto.getDni());
+        usuario.setFechaNacimiento(dto.getFechaNacimiento());
+        usuario.setDireccionEnvio(dto.getDireccionEnvio());
+        usuario.setRuc(dto.getRuc());
+        usuario.setRazonSocial(dto.getRazonSocial());
+        usuario.setTelefono2(dto.getTelefono2());
         return usuario;
     }   
 }

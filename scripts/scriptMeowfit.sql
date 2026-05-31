@@ -15,7 +15,7 @@ USE meowfit;
 CREATE TABLE Usuario (
     idUsuario          INT PRIMARY KEY AUTO_INCREMENT,
     -- campos comunes a todos los roles
-    nombres            VARCHAR(100) NOT NULL,
+    nombres            VARCHAR(100) NOT NULL, 
     correo             VARCHAR(100) UNIQUE NOT NULL,
     contrasena         VARCHAR(255) NOT NULL,
     telefono           VARCHAR(20),
@@ -24,6 +24,7 @@ CREATE TABLE Usuario (
     fechaActualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     rol                ENUM('ADMINISTRADOR','COMERCIANTE','CLIENTE') NOT NULL DEFAULT 'CLIENTE',
     -- campos exclusivos de ClienteB2C (null para otros roles)
+    dni                VARCHAR(20) UNIQUE, 
     fechaNacimiento    DATE,
     direccionEnvio     TEXT,
     -- campos exclusivos de ClienteB2B (null para otros roles; ruc NOT NULL → B2B)
@@ -238,7 +239,6 @@ CREATE TABLE LogAuditoria (
 CREATE INDEX idx_pedido_estado        ON Pedido(estado);
 CREATE INDEX idx_producto_nombre      ON Producto(nombre);
 CREATE INDEX idx_usuario_correo       ON Usuario(correo);
-CREATE INDEX idx_usuario_dni          ON Usuario(dni);
 CREATE INDEX idx_cotizacion_estado    ON Cotizacion(estado);
 CREATE INDEX idx_variante_producto    ON VarianteProducto(idProducto);
 CREATE INDEX idx_alerta_estado        ON AlertaAbastecimiento(estado);

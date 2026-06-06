@@ -1,6 +1,7 @@
 package com.meowfit.backend.usuario.service;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,14 @@ public class UsuarioService {
                                 .toList();
         }
 
+        // Lista solo los usuarios con rol COMERCIANTE
+        public List<UsuarioDTO> ListarComerciantes() {
+                return usuarioRepository.findByRol(Usuario.Rol.COMERCIANTE)
+                                .stream()
+                                .map(usuarioMapper::ToDTO)
+                                .toList();
+        }
+
         // Busca un usuario por su ID
         public UsuarioDTO BuscarPorId(Long id) {
                 Usuario usuario = usuarioRepository.findById(id)
@@ -56,6 +65,8 @@ public class UsuarioService {
                         throw new BadRequestException("La contraseña es obligatoria al crear un usuario");
                 }
                 Usuario usuario = usuarioMapper.ToEntity(dto);
+                // Asegura que fechaActualizacion esté poblada antes del insert
+                usuario.setFechaActualizacion(LocalDateTime.now());
                 // Hashea la contraseña antes de persistir
                 usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
                 Usuario guardado = usuarioRepository.save(usuario);
@@ -81,7 +92,13 @@ public class UsuarioService {
                 usuario.setTelefono(dto.getTelefono());
                 usuario.setCorreo(dto.getCorreo());
                 usuario.setRol(dto.getRol());
-
+                usuario.setDni(dto.getDni());
+                usuario.setFechaNacimiento(dto.getFechaNacimiento());
+                usuario.setDireccionEnvio(dto.getDireccionEnvio());
+                usuario.setRuc(dto.getRuc());
+                usuario.setRazonSocial(dto.getRazonSocial());
+                usuario.setTelefono2(dto.getTelefono2());
+                usuario.setFechaActualizacion(LocalDateTime.now());
                 Usuario guardado = usuarioRepository.save(usuario);
                 return usuarioMapper.ToDTO(guardado);
         }
@@ -94,6 +111,7 @@ public class UsuarioService {
                                                 "Usuario no encontrado con id: " + id));
 
                 usuario.setEstado(Estado.INACTIVO);
+                usuario.setFechaActualizacion(LocalDateTime.now());
                 Usuario guardado = usuarioRepository.save(usuario);
                 return usuarioMapper.ToDTO(guardado);
         }
@@ -105,6 +123,7 @@ public class UsuarioService {
                                                 "Usuario no encontrado con id: " + id));
 
                 usuario.setEstado(Estado.ACTIVO);
+                usuario.setFechaActualizacion(LocalDateTime.now());
                 Usuario guardado = usuarioRepository.save(usuario);
                 return usuarioMapper.ToDTO(guardado);
         }
@@ -136,6 +155,7 @@ public class UsuarioService {
 
                 // Hashea y actualiza la nueva contraseña
                 usuarioObjetivo.setContrasena(passwordEncoder.encode(dto.getContrasena()));
+                usuarioObjetivo.setFechaActualizacion(LocalDateTime.now());
                 Usuario guardado = usuarioRepository.save(usuarioObjetivo);
                 return usuarioMapper.ToDTO(guardado);
         }

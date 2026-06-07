@@ -8,10 +8,10 @@
 		<version>4.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.meowfit</groupId>
-	<artifactId>meowfit</artifactId>
+	<groupId>com.meowtfit</groupId>
+	<artifactId>meowtfit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>meowfit</name>
+	<name>meowtfit</name>
 	<description/>
 	<url/>
 	<licenses>

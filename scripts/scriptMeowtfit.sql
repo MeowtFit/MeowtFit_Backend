@@ -48,7 +48,7 @@ CREATE TABLE Producto (
     idProducto  INT PRIMARY KEY AUTO_INCREMENT,
     nombre      VARCHAR(150) NOT NULL,
     precioBase  DECIMAL(10, 2) NOT NULL,
-    estado      ENUM('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
+    estado      ENUM('ACTIVO','INACTIVO','AGOTADO') DEFAULT 'ACTIVO',
     descripcion TEXT,
     imagenUrl   VARCHAR(500),
     idCategoria INT NOT NULL,

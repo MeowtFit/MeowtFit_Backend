@@ -1,10 +1,16 @@
 package com.meowtfit.backend.catalogo.service;
 
 import com.meowtfit.backend.catalogo.dto.ProductoDTO;
+import com.meowtfit.backend.catalogo.dto.ProductoRequestDTO;
+import com.meowtfit.backend.catalogo.entity.Categoria;
+import com.meowtfit.backend.catalogo.entity.EstadoProducto;
 import com.meowtfit.backend.catalogo.entity.Producto;
 import com.meowtfit.backend.catalogo.mapper.ProductoMapper;
+import com.meowtfit.backend.catalogo.repository.CategoriaRepository;
 import com.meowtfit.backend.catalogo.repository.ProductoRepository;
 import com.meowtfit.backend.catalogo.repository.ProductoSpecification;
+import com.meowtfit.backend.exception.BadRequestException;
+import com.meowtfit.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,13 +31,19 @@ public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
     private final ProductoMapper productoMapper;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
-    public Page<ProductoDTO> filtrarProductos(Long idCategoria, BigDecimal precioMin, BigDecimal precioMax, String talla, Pageable pageable) {
+    public Page<ProductoDTO> filtrarProductos(String nombre, Long idCategoria, BigDecimal precioMin, BigDecimal precioMax, String talla, Pageable pageable) {
         Specification<Producto> spec = null;
 
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            spec = Specification.where(ProductoSpecification.hasNombre(nombre.trim()));
+        }
+
         if (idCategoria != null) {
-            spec = Specification.where(ProductoSpecification.hasCategoria(idCategoria));
+            Specification<Producto> catSpec = ProductoSpecification.hasCategoria(idCategoria);
+            spec = (spec == null) ? Specification.where(catSpec) : spec.and(catSpec);
         }
         
         if (precioMin != null || precioMax != null) {
@@ -46,5 +60,95 @@ public class ProductoServiceImpl implements ProductoService {
             return productoRepository.findAll(pageable).map(productoMapper::toDTO);
         }
         return productoRepository.findAll(spec, pageable).map(productoMapper::toDTO);
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO registrarProducto(ProductoRequestDTO dto) {
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
+            throw new BadRequestException("El nombre del producto no puede estar vacío");
+        }
+        Categoria categoria = null;
+        if (dto.getIdCategoria() != null) {
+            categoria = categoriaRepository.findById(dto.getIdCategoria())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + dto.getIdCategoria()));
+        } else {
+            throw new BadRequestException("El id de la categoría es obligatorio");
+        }
+        
+        Producto producto = productoMapper.toEntity(dto, categoria);
+        if (producto.getEstado() == null) {
+            producto.setEstado(EstadoProducto.ACTIVO);
+        }
+        Producto guardado = productoRepository.save(producto);
+        return productoMapper.toDTO(guardado);
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO editarProducto(Long idProducto, ProductoRequestDTO dto) {
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + idProducto));
+                
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
+            throw new BadRequestException("El nombre del producto no puede estar vacío");
+        }
+        
+        Categoria categoria = null;
+        if (dto.getIdCategoria() != null) {
+            categoria = categoriaRepository.findById(dto.getIdCategoria())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + dto.getIdCategoria()));
+        } else {
+            throw new BadRequestException("El id de la categoría es obligatorio");
+        }
+
+        producto.setNombre(dto.getNombre());
+        producto.setPrecioBase(dto.getPrecioBase());
+        producto.setEstado(dto.getEstado());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setImagenUrl(dto.getImagenUrl());
+        producto.setCategoria(categoria);
+        
+        Producto guardado = productoRepository.save(producto);
+        return productoMapper.toDTO(guardado);
+    }
+
+    @Override
+    public ProductoDTO buscarProductoPorId(Long idProducto) {
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + idProducto));
+        return productoMapper.toDTO(producto);
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO activarProducto(Long idProducto) {
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + idProducto));
+        producto.setEstado(EstadoProducto.ACTIVO);
+        Producto guardado = productoRepository.save(producto);
+        return productoMapper.toDTO(guardado);
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO desactivarProducto(Long idProducto) {
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + idProducto));
+        producto.setEstado(EstadoProducto.INACTIVO);
+        Producto guardado = productoRepository.save(producto);
+        return productoMapper.toDTO(guardado);
+    }
+
+    @Override
+    public List<ProductoDTO> listarProductosPorCategoria(Long idCategoria) {
+        return productoRepository.findAll(Specification.where(ProductoSpecification.hasCategoria(idCategoria)))
+                .stream().map(productoMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductoDTO> listarProductosPorNombre(String nombre) {
+        return productoRepository.findAll(Specification.where(ProductoSpecification.hasNombre(nombre)))
+                .stream().map(productoMapper::toDTO).collect(Collectors.toList());
     }
 }

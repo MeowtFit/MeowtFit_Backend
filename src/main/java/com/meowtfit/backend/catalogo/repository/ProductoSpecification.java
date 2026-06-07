@@ -38,4 +38,8 @@ public class ProductoSpecification {
             );
         };
     }
+    public static Specification<Producto> hasNombre(String nombre) {
+        return (root, query, criteriaBuilder) -> 
+            criteriaBuilder.like(criteriaBuilder.upper(root.get("nombre")), "%" + nombre.toUpperCase() + "%");
+    }
 }

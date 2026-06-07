@@ -1,6 +1,7 @@
 package com.meowtfit.backend.catalogo.mapper;
 
 import com.meowtfit.backend.catalogo.dto.CategoriaDTO;
+import com.meowtfit.backend.catalogo.dto.CategoriaRequestDTO;
 import com.meowtfit.backend.catalogo.entity.Categoria;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,13 @@ public class CategoriaMapper {
         if (dto == null) return null;
         Categoria categoria = new Categoria();
         categoria.setIdCategoria(dto.getIdCategoria());
+        categoria.setNombre(dto.getNombre());
+        return categoria;
+    }
+
+    public Categoria toEntity(CategoriaRequestDTO dto) {
+        if (dto == null) return null;
+        Categoria categoria = new Categoria();
         categoria.setNombre(dto.getNombre());
         return categoria;
     }

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VarianteProductoRepository extends JpaRepository<VarianteProducto, Long> {
+    java.util.List<VarianteProducto> findByProducto_IdProducto(Long idProducto);
 }

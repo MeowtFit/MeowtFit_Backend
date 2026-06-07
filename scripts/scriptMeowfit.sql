@@ -1,7 +1,7 @@
 -- ADVERTENCIA: La línea DROP DATABASE elimina todos los datos. Comentarla en producción.
-DROP DATABASE IF EXISTS meowfit;
-CREATE DATABASE meowfit;
-USE meowfit;
+DROP DATABASE IF EXISTS meowtfit;
+CREATE DATABASE meowtfit;
+USE meowtfit;
 
 -- ============================================================
 -- USUARIOS Y ROLES  (Single Table Inheritance)

@@ -74,8 +74,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(CorsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/carritos/**").authenticated()
                         .anyRequest().permitAll())
                 .authenticationProvider(AuthenticationProvider());
 

@@ -1,6 +1,6 @@
-package com.meowtfit.backend.catalogo.service;
+package com.meowtfit.backend.negocio.service;
 
-import com.meowtfit.backend.catalogo.dto.ConfiguracionNegocioDTO;
+import com.meowtfit.backend.negocio.dto.ConfiguracionNegocioDTO;
 
 public interface ConfiguracionNegocioService {
     ConfiguracionNegocioDTO obtenerConfiguracion();

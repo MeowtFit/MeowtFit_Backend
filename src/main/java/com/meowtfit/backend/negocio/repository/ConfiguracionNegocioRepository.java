@@ -1,6 +1,6 @@
-package com.meowtfit.backend.catalogo.repository;
+package com.meowtfit.backend.negocio.repository;
 
-import com.meowtfit.backend.catalogo.entity.ConfiguracionNegocio;
+import com.meowtfit.backend.negocio.entity.ConfiguracionNegocio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

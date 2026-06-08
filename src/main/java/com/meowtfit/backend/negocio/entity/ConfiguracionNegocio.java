@@ -1,4 +1,4 @@
-package com.meowtfit.backend.catalogo.entity;
+package com.meowtfit.backend.negocio.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

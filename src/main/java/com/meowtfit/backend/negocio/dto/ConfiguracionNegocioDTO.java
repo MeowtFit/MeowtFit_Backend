@@ -1,4 +1,4 @@
-package com.meowtfit.backend.catalogo.dto;
+package com.meowtfit.backend.negocio.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

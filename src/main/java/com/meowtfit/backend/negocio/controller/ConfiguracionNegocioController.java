@@ -1,7 +1,7 @@
-package com.meowtfit.backend.catalogo.controller;
+package com.meowtfit.backend.negocio.controller;
 
-import com.meowtfit.backend.catalogo.dto.ConfiguracionNegocioDTO;
-import com.meowtfit.backend.catalogo.service.ConfiguracionNegocioService;
+import com.meowtfit.backend.negocio.dto.ConfiguracionNegocioDTO;
+import com.meowtfit.backend.negocio.service.ConfiguracionNegocioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

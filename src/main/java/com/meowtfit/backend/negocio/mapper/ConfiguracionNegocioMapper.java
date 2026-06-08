@@ -1,7 +1,7 @@
-package com.meowtfit.backend.catalogo.mapper;
+package com.meowtfit.backend.negocio.mapper;
 
-import com.meowtfit.backend.catalogo.dto.ConfiguracionNegocioDTO;
-import com.meowtfit.backend.catalogo.entity.ConfiguracionNegocio;
+import com.meowtfit.backend.negocio.dto.ConfiguracionNegocioDTO;
+import com.meowtfit.backend.negocio.entity.ConfiguracionNegocio;
 import org.springframework.stereotype.Component;
 
 @Component

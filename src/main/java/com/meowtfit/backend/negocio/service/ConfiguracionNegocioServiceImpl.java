@@ -1,9 +1,9 @@
-package com.meowtfit.backend.catalogo.service;
+package com.meowtfit.backend.negocio.service;
 
-import com.meowtfit.backend.catalogo.dto.ConfiguracionNegocioDTO;
-import com.meowtfit.backend.catalogo.entity.ConfiguracionNegocio;
-import com.meowtfit.backend.catalogo.mapper.ConfiguracionNegocioMapper;
-import com.meowtfit.backend.catalogo.repository.ConfiguracionNegocioRepository;
+import com.meowtfit.backend.negocio.dto.ConfiguracionNegocioDTO;
+import com.meowtfit.backend.negocio.entity.ConfiguracionNegocio;
+import com.meowtfit.backend.negocio.mapper.ConfiguracionNegocioMapper;
+import com.meowtfit.backend.negocio.repository.ConfiguracionNegocioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

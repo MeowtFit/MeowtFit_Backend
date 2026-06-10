@@ -62,3 +62,33 @@ INSERT INTO VarianteProducto (talla, color, stockDisponible, stockReservado, idP
 ('S', 'Blanco', 100, 0, 6),
 ('M', 'Blanco', 150, 10, 6),
 ('S', 'Negro', 100, 5, 6);
+
+INSERT INTO ConfiguracionNegocio (stockMinimoCotizacion, porcentajePrecioPiso) 
+VALUES (1000, 20.00);
+
+-- Descuentos para: Blusa de Seda Estampada (idProducto = 1)
+-- Llevando de 12 a 49 unidades -> 5% de descuento
+-- Llevando de 50 a 999 unidades -> 10% de descuento
+INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
+(12, 49, 5.00, 1),
+(50, 999, 10.00, 1);
+
+-- Descuentos para: Pantalón Jean High Waist (idProducto = 2)
+-- Llevando de 6 a 24 unidades -> 8% de descuento
+-- Llevando de 25 a 999 unidades -> 15% de descuento
+INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
+(6, 24, 8.00, 2),
+(25, 999, 15.00, 2);
+
+-- Descuentos para: Vestido de Noche Elegante (idProducto = 3)
+-- Al ser más caro, el descuento empieza a partir de pocas unidades
+INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
+(3, 10, 5.00, 3),
+(11, 999, 12.00, 3);
+
+-- Descuentos para: Top Básico Rib (idProducto = 6)
+-- Al ser un producto básico de alta rotación, requiere comprar más volumen para el descuento
+INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
+(24, 99, 10.00, 6),
+(100, 499, 15.00, 6),
+(500, 999, 25.00, 6);

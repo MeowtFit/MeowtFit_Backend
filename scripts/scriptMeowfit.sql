@@ -79,12 +79,12 @@ CREATE TABLE ConfiguracionNegocio (
 );
 
 CREATE TABLE ReglaDescuento (
-  idRegla BIGINT AUTO_INCREMENT PRIMARY KEY,
-  rangoMinimo INT NOT NULL,
-  rangoMaximo INT NOT NULL,
-  porcentaje DECIMAL(5,2) NOT NULL,
-  idProducto BIGINT NOT NULL,
-  CONSTRAINT fk_regla_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
+    idRegla INT AUTO_INCREMENT PRIMARY KEY,
+    rangoMinimo INT NOT NULL,
+    rangoMaximo INT NOT NULL,
+    porcentaje DECIMAL(5,2) NOT NULL,
+    idProducto INT NOT NULL,
+    CONSTRAINT fk_regla_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 );
 
 -- ============================================================

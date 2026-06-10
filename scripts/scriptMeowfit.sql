@@ -1,7 +1,6 @@
--- ADVERTENCIA: La línea DROP DATABASE elimina todos los datos. Comentarla en producción.
-DROP DATABASE IF EXISTS meowfit;
-CREATE DATABASE meowfit;
-USE meowfit;
+DROP DATABASE IF EXISTS meowtfit;
+CREATE DATABASE meowtfit;
+USE meowtfit;
 
 -- ============================================================
 -- USUARIOS Y ROLES  (Single Table Inheritance)
@@ -48,7 +47,7 @@ CREATE TABLE Producto (
     idProducto  INT PRIMARY KEY AUTO_INCREMENT,
     nombre      VARCHAR(150) NOT NULL,
     precioBase  DECIMAL(10, 2) NOT NULL,
-    estado      ENUM('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
+    estado      ENUM('ACTIVO','INACTIVO','AGOTADO') DEFAULT 'ACTIVO',
     descripcion TEXT,
     imagenUrl   VARCHAR(500),
     idCategoria INT NOT NULL,
@@ -80,11 +79,14 @@ CREATE TABLE ConfiguracionNegocio (
 );
 
 -- Tabla: ReglaDescuento (descuentos dinámicos por rango de volumen)
+-- idProducto NULL → regla global; idProducto NOT NULL → regla específica del producto
 CREATE TABLE ReglaDescuento (
     idRegla     INT PRIMARY KEY AUTO_INCREMENT,
     rangoMinimo INT NOT NULL,
     rangoMaximo INT NOT NULL,
-    porcentaje  DECIMAL(5, 2) NOT NULL
+    porcentaje  DECIMAL(5, 2) NOT NULL,
+    idProducto  INT NULL,
+    FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
 );
 
 -- ============================================================
@@ -104,6 +106,7 @@ CREATE TABLE Carrito (
 CREATE TABLE LineaCarrito (
     idLineaCarrito INT PRIMARY KEY AUTO_INCREMENT,
     cantidad       INT NOT NULL,
+    precioUnitario DECIMAL(10, 2) NOT NULL,
     subtotal       DECIMAL(10, 2) NOT NULL,
     idCarrito      INT NOT NULL,
     idVariante     INT NOT NULL,
@@ -242,3 +245,4 @@ CREATE INDEX idx_usuario_correo       ON Usuario(correo);
 CREATE INDEX idx_cotizacion_estado    ON Cotizacion(estado);
 CREATE INDEX idx_variante_producto    ON VarianteProducto(idProducto);
 CREATE INDEX idx_alerta_estado        ON AlertaAbastecimiento(estado);
+CREATE INDEX idx_regla_producto       ON ReglaDescuento(idProducto);

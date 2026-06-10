@@ -1,6 +1,7 @@
 package com.meowtfit.backend.catalogo.mapper;
 
 import com.meowtfit.backend.catalogo.dto.ReglaDescuentoDTO;
+import com.meowtfit.backend.catalogo.dto.ReglaDescuentoRequestDTO;
 import com.meowtfit.backend.catalogo.entity.ReglaDescuento;
 import com.meowtfit.backend.catalogo.entity.Producto;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,16 @@ public class ReglaDescuentoMapper {
             p.setIdProducto(dto.getIdProducto());
             e.setProducto(p);
         }
+        return e;
+    }
+
+    public ReglaDescuento toEntity(ReglaDescuentoRequestDTO dto, Producto producto) {
+        if (dto == null) return null;
+        ReglaDescuento e = new ReglaDescuento();
+        e.setRangoMinimo(dto.getRangoMinimo());
+        e.setRangoMaximo(dto.getRangoMaximo());
+        e.setPorcentaje(dto.getPorcentaje());
+        e.setProducto(producto);
         return e;
     }
 }

@@ -54,9 +54,13 @@ public class Producto {
     @JoinColumn(name = "idCategoria", nullable = false)
     private Categoria categoria;
 
-    // Para evitar stack overflow
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VarianteProducto> variantes;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReglaDescuento> reglasDescuento;
 }

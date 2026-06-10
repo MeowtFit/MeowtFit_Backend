@@ -73,20 +73,18 @@ CREATE TABLE VarianteProducto (
 -- stockMinimoCotizacion: unidades a partir de las cuales se habilita cotización
 -- porcentajePrecioPiso : porcentaje mínimo de venta aceptable en cotizaciones
 CREATE TABLE ConfiguracionNegocio (
-    idConfig                INT PRIMARY KEY AUTO_INCREMENT,
-    stockMinimoCotizacion   INT NOT NULL DEFAULT 1000,
-    porcentajePrecioPiso    DECIMAL(5, 2) NOT NULL DEFAULT 30.00
+  idConfiguracion BIGINT AUTO_INCREMENT PRIMARY KEY,
+  stockMinimoCotizacion INT NOT NULL DEFAULT 1000,
+  porcentajePrecioPiso DECIMAL(5,2) DEFAULT 0.00
 );
 
--- Tabla: ReglaDescuento (descuentos dinámicos por rango de volumen)
--- idProducto NULL → regla global; idProducto NOT NULL → regla específica del producto
 CREATE TABLE ReglaDescuento (
-    idRegla     INT PRIMARY KEY AUTO_INCREMENT,
+    idRegla INT AUTO_INCREMENT PRIMARY KEY,
     rangoMinimo INT NOT NULL,
     rangoMaximo INT NOT NULL,
-    porcentaje  DECIMAL(5, 2) NOT NULL,
-    idProducto  INT NULL,
-    FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
+    porcentaje DECIMAL(5,2) NOT NULL,
+    idProducto INT NOT NULL,
+    CONSTRAINT fk_regla_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 );
 
 -- ============================================================

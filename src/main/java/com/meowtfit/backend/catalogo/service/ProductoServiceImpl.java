@@ -5,7 +5,11 @@ import com.meowtfit.backend.catalogo.dto.ProductoRequestDTO;
 import com.meowtfit.backend.catalogo.entity.Categoria;
 import com.meowtfit.backend.catalogo.entity.EstadoProducto;
 import com.meowtfit.backend.catalogo.entity.Producto;
+import com.meowtfit.backend.catalogo.entity.ReglaDescuento;
+import com.meowtfit.backend.catalogo.entity.VarianteProducto;
 import com.meowtfit.backend.catalogo.mapper.ProductoMapper;
+import com.meowtfit.backend.catalogo.mapper.ReglaDescuentoMapper;
+import com.meowtfit.backend.catalogo.mapper.VarianteProductoMapper;
 import com.meowtfit.backend.catalogo.repository.CategoriaRepository;
 import com.meowtfit.backend.catalogo.repository.ProductoRepository;
 import com.meowtfit.backend.catalogo.repository.ProductoSpecification;
@@ -16,8 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-// Para que mantenga la sesión abierta durante el ciclo de vida
-// del método filtrarProductosActivos
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -32,6 +34,8 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepository productoRepository;
     private final ProductoMapper productoMapper;
     private final CategoriaRepository categoriaRepository;
+    private final VarianteProductoMapper varianteProductoMapper;
+    private final ReglaDescuentoMapper reglaDescuentoMapper;
 
     @Override
     public Page<ProductoDTO> filtrarProductos(String nombre, Long idCategoria, BigDecimal precioMin, BigDecimal precioMax, String talla, Pageable pageable) {
@@ -68,18 +72,31 @@ public class ProductoServiceImpl implements ProductoService {
         if (dto.getNombre() == null || dto.getNombre().isBlank()) {
             throw new BadRequestException("El nombre del producto no puede estar vacío");
         }
-        Categoria categoria = null;
-        if (dto.getIdCategoria() != null) {
-            categoria = categoriaRepository.findById(dto.getIdCategoria())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + dto.getIdCategoria()));
-        } else {
+        if (dto.getIdCategoria() == null) {
             throw new BadRequestException("El id de la categoría es obligatorio");
         }
-        
+        Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
+            .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + dto.getIdCategoria()));
+
         Producto producto = productoMapper.toEntity(dto, categoria);
         if (producto.getEstado() == null) {
             producto.setEstado(EstadoProducto.ACTIVO);
         }
+
+        if (dto.getVariantes() != null) {
+            List<VarianteProducto> variantes = dto.getVariantes().stream()
+                .map(v -> varianteProductoMapper.toEntity(v, producto))
+                .collect(Collectors.toList());
+            producto.setVariantes(variantes);
+        }
+
+        if (dto.getReglasDescuento() != null) {
+            List<ReglaDescuento> reglas = dto.getReglasDescuento().stream()
+                .map(r -> reglaDescuentoMapper.toEntity(r, producto))
+                .collect(Collectors.toList());
+            producto.setReglasDescuento(reglas);
+        }
+
         Producto guardado = productoRepository.save(producto);
         return productoMapper.toDTO(guardado);
     }
@@ -89,18 +106,15 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoDTO editarProducto(Long idProducto, ProductoRequestDTO dto) {
         Producto producto = productoRepository.findById(idProducto)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + idProducto));
-                
+
         if (dto.getNombre() == null || dto.getNombre().isBlank()) {
             throw new BadRequestException("El nombre del producto no puede estar vacío");
         }
-        
-        Categoria categoria = null;
-        if (dto.getIdCategoria() != null) {
-            categoria = categoriaRepository.findById(dto.getIdCategoria())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + dto.getIdCategoria()));
-        } else {
+        if (dto.getIdCategoria() == null) {
             throw new BadRequestException("El id de la categoría es obligatorio");
         }
+        Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
+            .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + dto.getIdCategoria()));
 
         producto.setNombre(dto.getNombre());
         producto.setPrecioBase(dto.getPrecioBase());
@@ -108,7 +122,21 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setDescripcion(dto.getDescripcion());
         producto.setImagenUrl(dto.getImagenUrl());
         producto.setCategoria(categoria);
-        
+
+        if (dto.getVariantes() != null) {
+            producto.getVariantes().clear();
+            dto.getVariantes().stream()
+                .map(v -> varianteProductoMapper.toEntity(v, producto))
+                .forEach(producto.getVariantes()::add);
+        }
+
+        if (dto.getReglasDescuento() != null) {
+            producto.getReglasDescuento().clear();
+            dto.getReglasDescuento().stream()
+                .map(r -> reglaDescuentoMapper.toEntity(r, producto))
+                .forEach(producto.getReglasDescuento()::add);
+        }
+
         Producto guardado = productoRepository.save(producto);
         return productoMapper.toDTO(guardado);
     }

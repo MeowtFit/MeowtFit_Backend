@@ -1,6 +1,7 @@
 package com.meowtfit.backend.catalogo.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 import com.meowtfit.backend.catalogo.entity.EstadoProducto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,4 +17,6 @@ public class ProductoRequestDTO {
     private String descripcion;
     private String imagenUrl;
     private Long idCategoria;
+    private List<VarianteProductoRequestDTO> variantes;
+    private List<ReglaDescuentoRequestDTO> reglasDescuento;
 }

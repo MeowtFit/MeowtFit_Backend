@@ -15,6 +15,7 @@ public class ProductoMapper {
 
     private final CategoriaMapper categoriaMapper;
     private final VarianteProductoMapper varianteProductoMapper;
+    private final ReglaDescuentoMapper reglaDescuentoMapper;
 
     public ProductoDTO toDTO(Producto producto) {
         if (producto == null) return null;
@@ -36,7 +37,13 @@ public class ProductoMapper {
                 .map(varianteProductoMapper::toDTO)
                 .collect(Collectors.toList()));
         }
-        
+
+        if (producto.getReglasDescuento() != null) {
+            dto.setReglasDescuento(producto.getReglasDescuento().stream()
+                .map(reglaDescuentoMapper::toDTO)
+                .collect(Collectors.toList()));
+        }
+
         return dto;
     }
 

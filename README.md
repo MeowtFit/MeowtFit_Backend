@@ -1,4 +1,2 @@
 "# MeowtFit-Plus" 
-Oa
-Uwu
-
+Sincronizado

@@ -21,4 +21,5 @@ public class ProductoDTO {
     
     private CategoriaDTO categoria;
     private List<VarianteProductoDTO> variantes;
+    private List<ReglaDescuentoDTO> reglasDescuento;
 }

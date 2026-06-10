@@ -1,4 +1,3 @@
--- ADVERTENCIA: La línea DROP DATABASE elimina todos los datos. Comentarla en producción.
 DROP DATABASE IF EXISTS meowtfit;
 CREATE DATABASE meowtfit;
 USE meowtfit;
@@ -48,7 +47,7 @@ CREATE TABLE Producto (
     idProducto  INT PRIMARY KEY AUTO_INCREMENT,
     nombre      VARCHAR(150) NOT NULL,
     precioBase  DECIMAL(10, 2) NOT NULL,
-    estado      ENUM('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
+    estado      ENUM('ACTIVO','INACTIVO','AGOTADO') DEFAULT 'ACTIVO',
     descripcion TEXT,
     imagenUrl   VARCHAR(500),
     idCategoria INT NOT NULL,
@@ -105,6 +104,7 @@ CREATE TABLE Carrito (
 CREATE TABLE LineaCarrito (
     idLineaCarrito INT PRIMARY KEY AUTO_INCREMENT,
     cantidad       INT NOT NULL,
+    precioUnitario DECIMAL(10, 2) NOT NULL,
     subtotal       DECIMAL(10, 2) NOT NULL,
     idCarrito      INT NOT NULL,
     idVariante     INT NOT NULL,

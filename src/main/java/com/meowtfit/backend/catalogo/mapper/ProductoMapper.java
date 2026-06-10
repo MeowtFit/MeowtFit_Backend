@@ -1,6 +1,8 @@
 package com.meowtfit.backend.catalogo.mapper;
 
 import com.meowtfit.backend.catalogo.dto.ProductoDTO;
+import com.meowtfit.backend.catalogo.dto.ProductoRequestDTO;
+import com.meowtfit.backend.catalogo.entity.Categoria;
 import com.meowtfit.backend.catalogo.entity.Producto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,5 +38,18 @@ public class ProductoMapper {
         }
         
         return dto;
+    }
+
+    public Producto toEntity(ProductoRequestDTO dto, Categoria categoria) {
+        if (dto == null) return null;
+
+        Producto producto = new Producto();
+        producto.setNombre(dto.getNombre());
+        producto.setPrecioBase(dto.getPrecioBase());
+        producto.setEstado(dto.getEstado());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setImagenUrl(dto.getImagenUrl());
+        producto.setCategoria(categoria);
+        return producto;
     }
 }

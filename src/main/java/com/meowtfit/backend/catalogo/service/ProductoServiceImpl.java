@@ -13,6 +13,7 @@ import com.meowtfit.backend.catalogo.mapper.VarianteProductoMapper;
 import com.meowtfit.backend.catalogo.repository.CategoriaRepository;
 import com.meowtfit.backend.catalogo.repository.ProductoRepository;
 import com.meowtfit.backend.catalogo.repository.ProductoSpecification;
+import com.meowtfit.backend.color.repository.ColorRepository;
 import com.meowtfit.backend.exception.BadRequestException;
 import com.meowtfit.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class ProductoServiceImpl implements ProductoService {
     private final CategoriaRepository categoriaRepository;
     private final VarianteProductoMapper varianteProductoMapper;
     private final ReglaDescuentoMapper reglaDescuentoMapper;
+    private final ColorRepository colorRepository;
 
     @Override
     public Page<ProductoDTO> filtrarProductos(String nombre, Long idCategoria, BigDecimal precioMin, BigDecimal precioMax, String talla, Pageable pageable) {
@@ -85,7 +87,11 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (dto.getVariantes() != null) {
             List<VarianteProducto> variantes = dto.getVariantes().stream()
-                .map(v -> varianteProductoMapper.toEntity(v, producto))
+                .map(v -> {
+                    var color = colorRepository.findById(v.getIdColor())
+                        .orElseThrow(() -> new ResourceNotFoundException("Color no encontrado con id: " + v.getIdColor()));
+                    return varianteProductoMapper.toEntity(v, producto, color);
+                })
                 .collect(Collectors.toList());
             producto.setVariantes(variantes);
         }
@@ -126,7 +132,11 @@ public class ProductoServiceImpl implements ProductoService {
         if (dto.getVariantes() != null) {
             producto.getVariantes().clear();
             dto.getVariantes().stream()
-                .map(v -> varianteProductoMapper.toEntity(v, producto))
+                .map(v -> {
+                    var color = colorRepository.findById(v.getIdColor())
+                        .orElseThrow(() -> new ResourceNotFoundException("Color no encontrado con id: " + v.getIdColor()));
+                    return varianteProductoMapper.toEntity(v, producto, color);
+                })
                 .forEach(producto.getVariantes()::add);
         }
 

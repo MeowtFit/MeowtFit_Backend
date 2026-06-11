@@ -1,6 +1,7 @@
 package com.meowtfit.backend.pedido.dto;
 
 import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ public class LineaPedidoDTO {
     private Long idVariante;
     private String nombreProducto; // Dato extra útil para el frontend
     private String talla;
-    private String color;
+    private Long idColor;
+    private String color; // nombre del color para mostrar en el frontend
 }

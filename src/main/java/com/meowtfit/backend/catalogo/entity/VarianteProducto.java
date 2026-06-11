@@ -1,5 +1,5 @@
 package com.meowtfit.backend.catalogo.entity;
-
+import com.meowtfit.backend.color.entity.Color;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,9 +27,10 @@ public class VarianteProducto {
 
     @Column(name = "talla", nullable = false, length = 10)
     private String talla;
-
-    @Column(name = "color", nullable = false, length = 50)
-    private String color;
+ 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idColor", nullable = false)
+    private Color color;
 
     @Column(name = "stockDisponible", nullable = false)
     private Integer stockDisponible;

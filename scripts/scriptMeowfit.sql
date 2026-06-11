@@ -54,15 +54,22 @@ CREATE TABLE Producto (
     FOREIGN KEY (idCategoria) REFERENCES Categoria(idCategoria)
 );
 
+CREATE TABLE Color (
+    idColor     INT PRIMARY KEY AUTO_INCREMENT,
+    nombre      VARCHAR(50) NOT NULL,
+    hexadecimal VARCHAR(7) NOT NULL  -- Formato: #RRGGBB
+);
+
 -- Tabla: VarianteProducto (combinaciones talla/color de un producto)
 CREATE TABLE VarianteProducto (
     idVariante      INT PRIMARY KEY AUTO_INCREMENT,
     talla           VARCHAR(10),
-    color           VARCHAR(50),
+    idColor         INT,  
     stockDisponible INT DEFAULT 0,
     stockReservado  INT DEFAULT 0,
     idProducto      INT NOT NULL,
-    FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
+    FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+    FOREIGN KEY (idColor) REFERENCES Color(idColor) ON DELETE SET NULL
 );
 
 -- ============================================================

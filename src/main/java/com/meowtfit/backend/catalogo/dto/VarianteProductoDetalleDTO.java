@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VarianteProductoDTO {
+public class VarianteProductoDetalleDTO {
     private Long idVariante;
     private String talla;
-    private Long idColor;
-    private ColorDTO color;
     private Integer stockDisponible;
     private Integer stockReservado;
+    private ColorDTO color;
+    private ProductoResumenDTO producto;
 }

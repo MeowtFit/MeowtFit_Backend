@@ -1,12 +1,14 @@
 package com.meowtfit.backend.catalogo.service;
 
 import com.meowtfit.backend.catalogo.dto.VarianteProductoDTO;
+import com.meowtfit.backend.catalogo.dto.VarianteProductoDetalleDTO;
 import com.meowtfit.backend.catalogo.dto.VarianteProductoRequestDTO;
 import com.meowtfit.backend.catalogo.entity.Producto;
 import com.meowtfit.backend.catalogo.entity.VarianteProducto;
 import com.meowtfit.backend.catalogo.mapper.VarianteProductoMapper;
 import com.meowtfit.backend.catalogo.repository.ProductoRepository;
 import com.meowtfit.backend.catalogo.repository.VarianteProductoRepository;
+import com.meowtfit.backend.color.repository.ColorRepository;
 import com.meowtfit.backend.exception.BadRequestException;
 import com.meowtfit.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +20,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VarianteProductoServiceImpl implements VarianteProductoService {
 
     private final VarianteProductoRepository varianteProductoRepository;
     private final VarianteProductoMapper varianteProductoMapper;
     private final ProductoRepository productoRepository;
+    private final ColorRepository colorRepository;
 
     @Override
     public List<VarianteProductoDTO> obtenerVariantesPorProducto(Long idProducto) {
@@ -33,6 +37,13 @@ public class VarianteProductoServiceImpl implements VarianteProductoService {
     }
 
     @Override
+    public VarianteProductoDetalleDTO obtenerVariantePorId(Long idVariante) {
+        VarianteProducto variante = varianteProductoRepository.findById(idVariante)
+                .orElseThrow(() -> new ResourceNotFoundException("Variante no encontrada con id: " + idVariante));
+        return varianteProductoMapper.toDetalleDTO(variante);
+    }
+
+    @Override
     @Transactional
     public VarianteProductoDTO registrarVarianteProducto(VarianteProductoRequestDTO dto) {
         if (dto.getIdProducto() == null) {
@@ -40,8 +51,13 @@ public class VarianteProductoServiceImpl implements VarianteProductoService {
         }
         Producto producto = productoRepository.findById(dto.getIdProducto())
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + dto.getIdProducto()));
-        
-        VarianteProducto variante = varianteProductoMapper.toEntity(dto, producto);
+        if (dto.getIdColor() == null) {
+            throw new BadRequestException("El id del color es obligatorio");
+        }
+        var color = colorRepository.findById(dto.getIdColor())
+                .orElseThrow(() -> new ResourceNotFoundException("Color no encontrado con id: " + dto.getIdColor()));
+
+        VarianteProducto variante = varianteProductoMapper.toEntity(dto, producto, color);
         VarianteProducto guardado = varianteProductoRepository.save(variante);
         return varianteProductoMapper.toDTO(guardado);
     }
@@ -57,9 +73,14 @@ public class VarianteProductoServiceImpl implements VarianteProductoService {
         }
         Producto producto = productoRepository.findById(dto.getIdProducto())
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + dto.getIdProducto()));
+        if (dto.getIdColor() == null) {
+            throw new BadRequestException("El id del color es obligatorio");
+        }
+        var color = colorRepository.findById(dto.getIdColor())
+                .orElseThrow(() -> new ResourceNotFoundException("Color no encontrado con id: " + dto.getIdColor()));
 
         variante.setTalla(dto.getTalla());
-        variante.setColor(dto.getColor());
+        variante.setColor(color);
         variante.setStockDisponible(dto.getStockDisponible());
         variante.setStockReservado(dto.getStockReservado() != null ? dto.getStockReservado() : 0);
         variante.setProducto(producto);

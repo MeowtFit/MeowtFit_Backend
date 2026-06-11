@@ -30,6 +30,11 @@ public class VarianteProductoController {
         return ResponseEntity.ok(varianteProductoService.obtenerVariantesPorProducto(idProducto));
     }
 
+    @GetMapping("/{idVariante}")
+    public ResponseEntity<?> obtenerVariantePorId(@PathVariable Long idVariante) {
+        return ResponseEntity.ok(varianteProductoService.obtenerVariantePorId(idVariante));
+    }
+
     @PostMapping
     public ResponseEntity<VarianteProductoDTO> registrarVarianteProducto(@RequestBody VarianteProductoRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(varianteProductoService.registrarVarianteProducto(dto));

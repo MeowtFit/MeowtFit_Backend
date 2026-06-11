@@ -6,6 +6,7 @@ import com.meowtfit.backend.pedido.dto.LineaPedidoDTO;
 import com.meowtfit.backend.pedido.dto.PedidoDTO;
 import com.meowtfit.backend.pedido.entity.LineaPedido;
 import com.meowtfit.backend.pedido.entity.Pedido;
+import com.meowtfit.backend.color.entity.Color;
 
 @Component
 public class PedidoMapper {
@@ -47,7 +48,11 @@ public class PedidoMapper {
         if (linea.getVariante() != null) {
             dto.setIdVariante(linea.getVariante().getIdVariante());
             dto.setTalla(linea.getVariante().getTalla());
-            dto.setColor(linea.getVariante().getColor());
+
+            Color color = linea.getVariante().getColor();
+            dto.setIdColor(color != null ? color.getIdColor() : null);
+            dto.setColor(color != null ? color.getNombre() : null);
+
             if (linea.getVariante().getProducto() != null) {
                 dto.setNombreProducto(linea.getVariante().getProducto().getNombre());
             }

@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VarianteProductoRequestDTO {
-    private String talla;
-    private Long idColor;
-    private Integer stockDisponible;
-    private Integer stockReservado;
+public class ProductoResumenDTO {
     private Long idProducto;
+    private String nombre;
+    private BigDecimal precioBase;
+    private String imagenUrl;
 }

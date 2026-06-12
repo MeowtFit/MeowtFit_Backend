@@ -40,12 +40,13 @@ INSERT INTO Categoria (nombre) VALUES ('Faldas'); -- id: 8
 INSERT INTO Categoria (nombre) VALUES ('Casacas'); -- id: 9
 
 INSERT INTO Producto (nombre, precioBase, estado, descripcion, imagenUrl, idCategoria) VALUES 
-('Blusa de Seda Estampada', 45.00, 'ACTIVO', 'Blusa de seda suave con estampado floral de temporada, ideal para verano.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 1),
-('Pantalón Jean High Waist', 65.00, 'ACTIVO', 'Pantalón jean denim de tiro alto, corte recto y ajuste perfecto.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 6),
-('Vestido de Noche Elegante', 120.00, 'ACTIVO', 'Vestido largo de fiesta con abertura lateral y escote en V.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 2),
-('Casaca Cortavientos Ligera', 85.00, 'ACTIVO', 'Casaca impermeable y ligera con capucha ajustable.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 9),
-('Falda Plisada Midi', 55.00, 'ACTIVO', 'Falda midi con pliegues, cintura elástica muy cómoda.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 8),
-('Top Básico Rib', 25.00, 'ACTIVO', 'Top básico de tela rib tejida, ajustado al cuerpo.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 3);
+('Blusa de Seda Estampada', 45.00, 'ACTIVO', 'Blusa de seda suave con estampado floral de temporada, ideal para verano.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282249/blusa_estampada_dyoeew.jpg', 1),
+('Pantalón Jean High Waist', 65.00, 'ACTIVO', 'Pantalón jean denim de tiro alto, corte recto y ajuste perfecto.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282683/pantalon_jean_e8a621.jpg', 6),
+('Vestido de Noche Elegante', 120.00, 'ACTIVO', 'Vestido largo de fiesta con abertura lateral y escote en V.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282683/vestido_noche_kkc7g6.jpg', 2),
+('Casaca Cortavientos Ligera', 85.00, 'ACTIVO', 'Casaca impermeable y ligera con capucha ajustable.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282739/casaca_cortavientos_sc2vxz.jpg', 9),
+('Falda Plisada Midi', 55.00, 'ACTIVO', 'Falda midi con pliegues, cintura elástica muy cómoda.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282893/falda_plisada_ucqzmf.jpg', 8),
+('Top Básico Rib', 25.00, 'ACTIVO', 'Top básico de tela rib tejida, ajustado al cuerpo.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282994/top_basico_rib_uneghn.jpg', 3),
+('Polo Clásico Blanco', 35.00, 'ACTIVO', 'Polo de algodón de alta calidad, cómodo y versátil para cualquier ocasión.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 5);
 
 -- VARIANTES DE PRODUCTOS (Tallas, colores y stock)
 -- =====================================================
@@ -86,6 +87,14 @@ INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, i
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 100, 0, 6),
 ('M', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 150, 10, 6),
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 100, 5, 6);
+
+-- Variantes para: Polo Clásico Blanco (idProducto = 7)
+INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
+('S', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 80, 0, 7),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 120, 8, 7),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 90, 0, 7),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 60, 2, 7),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 50, 0, 7);
 
 INSERT INTO ConfiguracionNegocio (stockMinimoCotizacion, porcentajePrecioPiso) 
 VALUES (1000, 20.00);

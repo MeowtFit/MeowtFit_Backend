@@ -40,12 +40,12 @@ INSERT INTO Categoria (nombre) VALUES ('Faldas'); -- id: 8
 INSERT INTO Categoria (nombre) VALUES ('Casacas'); -- id: 9
 
 INSERT INTO Producto (nombre, precioBase, estado, descripcion, imagenUrl, idCategoria) VALUES 
-('Blusa de Seda Estampada', 45.00, 'ACTIVO', 'Blusa de seda suave con estampado floral de temporada, ideal para verano.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1773689638/samples/chair.png', 1),
-('Pantalón Jean High Waist', 65.00, 'ACTIVO', 'Pantalón jean denim de tiro alto, corte recto y ajuste perfecto.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1773689638/samples/chair.png', 6),
-('Vestido de Noche Elegante', 120.00, 'ACTIVO', 'Vestido largo de fiesta con abertura lateral y escote en V.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1773689638/samples/chair.png', 2),
-('Casaca Cortavientos Ligera', 85.00, 'ACTIVO', 'Casaca impermeable y ligera con capucha ajustable.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1773689638/samples/chair.png', 9),
-('Falda Plisada Midi', 55.00, 'ACTIVO', 'Falda midi con pliegues, cintura elástica muy cómoda.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1773689638/samples/chair.png', 8),
-('Top Básico Rib', 25.00, 'ACTIVO', 'Top básico de tela rib tejida, ajustado al cuerpo.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1773689638/samples/chair.png', 3);
+('Blusa de Seda Estampada', 45.00, 'ACTIVO', 'Blusa de seda suave con estampado floral de temporada, ideal para verano.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 1),
+('Pantalón Jean High Waist', 65.00, 'ACTIVO', 'Pantalón jean denim de tiro alto, corte recto y ajuste perfecto.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 6),
+('Vestido de Noche Elegante', 120.00, 'ACTIVO', 'Vestido largo de fiesta con abertura lateral y escote en V.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 2),
+('Casaca Cortavientos Ligera', 85.00, 'ACTIVO', 'Casaca impermeable y ligera con capucha ajustable.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 9),
+('Falda Plisada Midi', 55.00, 'ACTIVO', 'Falda midi con pliegues, cintura elástica muy cómoda.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 8),
+('Top Básico Rib', 25.00, 'ACTIVO', 'Top básico de tela rib tejida, ajustado al cuerpo.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 3);
 
 -- VARIANTES DE PRODUCTOS (Tallas, colores y stock)
 -- =====================================================

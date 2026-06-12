@@ -46,7 +46,7 @@ INSERT INTO Producto (nombre, precioBase, estado, descripcion, imagenUrl, idCate
 ('Casaca Cortavientos Ligera', 85.00, 'ACTIVO', 'Casaca impermeable y ligera con capucha ajustable.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282739/casaca_cortavientos_sc2vxz.jpg', 9),
 ('Falda Plisada Midi', 55.00, 'ACTIVO', 'Falda midi con pliegues, cintura elástica muy cómoda.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282893/falda_plisada_ucqzmf.jpg', 8),
 ('Top Básico Rib', 25.00, 'ACTIVO', 'Top básico de tela rib tejida, ajustado al cuerpo.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781282994/top_basico_rib_uneghn.jpg', 3),
-('Polo Clásico Blanco', 35.00, 'ACTIVO', 'Polo de algodón de alta calidad, cómodo y versátil para cualquier ocasión.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 5);
+('Polo Clásico', 35.00, 'ACTIVO', 'Polo de algodón de alta calidad, cómodo y versátil para cualquier ocasión.', 'https://res.cloudinary.com/dkflowz3b/image/upload/v1781133876/polo_blanco_iqu7gi.png', 5);
 
 -- VARIANTES DE PRODUCTOS (Tallas, colores y stock)
 -- =====================================================

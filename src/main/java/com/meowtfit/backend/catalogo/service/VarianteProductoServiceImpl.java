@@ -30,7 +30,6 @@ public class VarianteProductoServiceImpl implements VarianteProductoService {
 
     @Override
     public List<VarianteProductoDTO> obtenerVariantesPorProducto(Long idProducto) {
-        // Find by idProducto will require a method in the repository. Let's add that next.
         return varianteProductoRepository.findByProducto_IdProducto(idProducto).stream()
                 .map(varianteProductoMapper::toDTO)
                 .collect(Collectors.toList());

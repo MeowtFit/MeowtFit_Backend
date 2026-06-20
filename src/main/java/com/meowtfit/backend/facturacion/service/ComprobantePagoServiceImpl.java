@@ -10,20 +10,21 @@ import com.meowtfit.backend.pedido.entity.Pedido;
 import com.meowtfit.backend.pedido.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -34,12 +35,13 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
     private final ComprobantePagoRepository comprobantePagoRepository;
     private final PedidoRepository pedidoRepository;
     private final ComprobantePagoMapper comprobantePagoMapper;
+    private final S3Client s3Client;
 
-    @Value("${app.upload.comprobantes-dir:uploads/comprobantes}")
-    private String uploadDir;
+    @Value("${aws.s3.bucket}")
+    private String bucket;
 
     private static final long MAX_TAMANIO_BYTES = 10 * 1024 * 1024; // 10 MB
-    private static final java.util.Set<String> TIPOS_PERMITIDOS = java.util.Set.of(
+    private static final Set<String> TIPOS_PERMITIDOS = Set.of(
         "image/jpeg", "image/png", "image/jpg", "application/pdf"
     );
 
@@ -60,17 +62,17 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
         Pedido pedido = pedidoRepository.findById(idPedido)
             .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con id: " + idPedido));
 
-        // Si ya existe un comprobante para este pedido, reemplazarlo
+        // Si ya existe un comprobante para este pedido, eliminar el anterior de S3
         Optional<ComprobantePago> existente = comprobantePagoRepository.findByPedidoIdPedido(idPedido);
         existente.ifPresent(c -> {
-            eliminarArchivoFisico(c.getArchivo());
+            eliminarArchivoS3(c.getArchivo());
             comprobantePagoRepository.delete(c);
         });
 
-        String nombreArchivo = guardarArchivoEnDisco(archivo);
+        String s3Key = subirArchivoS3(archivo, contentType);
 
         ComprobantePago comprobante = new ComprobantePago();
-        comprobante.setArchivo(nombreArchivo);
+        comprobante.setArchivo(s3Key);
         comprobante.setTipoArchivo(contentType);
         comprobante.setPedido(pedido);
 
@@ -95,16 +97,13 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
     public Resource descargarArchivo(Long idComprobante) {
         ComprobantePago comprobante = comprobantePagoRepository.findById(idComprobante)
             .orElseThrow(() -> new ResourceNotFoundException("Comprobante no encontrado con id: " + idComprobante));
-        try {
-            Path rutaArchivo = Paths.get(uploadDir).resolve(comprobante.getArchivo()).normalize();
-            Resource recurso = new UrlResource(rutaArchivo.toUri());
-            if (!recurso.exists() || !recurso.isReadable()) {
-                throw new ResourceNotFoundException("No se pudo leer el archivo del comprobante");
-            }
-            return recurso;
-        } catch (MalformedURLException e) {
-            throw new ResourceNotFoundException("No se pudo leer el archivo del comprobante");
-        }
+
+        var request = GetObjectRequest.builder()
+            .bucket(bucket)
+            .key(comprobante.getArchivo())
+            .build();
+
+        return new InputStreamResource(s3Client.getObject(request));
     }
 
     @Override
@@ -112,29 +111,34 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
     public void eliminarComprobante(Long idComprobante) {
         ComprobantePago comprobante = comprobantePagoRepository.findById(idComprobante)
             .orElseThrow(() -> new ResourceNotFoundException("Comprobante no encontrado con id: " + idComprobante));
-        eliminarArchivoFisico(comprobante.getArchivo());
+        eliminarArchivoS3(comprobante.getArchivo());
         comprobantePagoRepository.delete(comprobante);
     }
 
-    private String guardarArchivoEnDisco(MultipartFile archivo) {
+    private String subirArchivoS3(MultipartFile archivo, String contentType) {
         String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
-        String nombreUnico = UUID.randomUUID().toString() + (extension != null ? "." + extension : "");
+        String key = "comprobantes/" + UUID.randomUUID() + (extension != null ? "." + extension : "");
         try {
-            Path dirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-            Files.createDirectories(dirPath);
-            Path destino = dirPath.resolve(nombreUnico);
-            Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-            return nombreUnico;
+            var request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType(contentType)
+                .contentLength(archivo.getSize())
+                .build();
+            s3Client.putObject(request, RequestBody.fromInputStream(archivo.getInputStream(), archivo.getSize()));
+            return key;
         } catch (IOException e) {
-            throw new BadRequestException("Error al guardar el archivo: " + e.getMessage());
+            throw new BadRequestException("Error al subir el archivo a S3: " + e.getMessage());
         }
     }
 
-    private void eliminarArchivoFisico(String nombreArchivo) {
+    private void eliminarArchivoS3(String key) {
         try {
-            Path rutaArchivo = Paths.get(uploadDir).toAbsolutePath().normalize().resolve(nombreArchivo);
-            Files.deleteIfExists(rutaArchivo);
-        } catch (IOException ignored) {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build());
+        } catch (Exception ignored) {
         }
     }
 }

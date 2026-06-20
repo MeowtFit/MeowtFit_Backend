@@ -34,3 +34,6 @@ test/
 error_log.txt
 ### VS Code ###
 .vscode/
+
+#imagenes
+uploads/

@@ -37,3 +37,6 @@ error_log.txt
 
 #imagenes
 uploads/
+
+# Credenciales y configuración local sensible
+src/main/resources/application-dev.properties

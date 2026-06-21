@@ -1,6 +1,11 @@
 package com.meowtfit.backend.pedido.controller;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -55,5 +60,31 @@ public class PedidoController {
     @PatchMapping("/{id}/estado")
     public ResponseEntity<PedidoDTO> cambiarEstado(@PathVariable Long id, @RequestParam EstadoPedido nuevoEstado) {
         return ResponseEntity.ok(pedidoService.cambiarEstado(id, nuevoEstado));
+    }
+
+    // Filtrar todos los pedidos con paginación (admin/comerciante)
+    // Ejemplo: GET /api/pedidos/filtrar?estado=REGISTRADO&idUsuario=2&page=0&size=10
+    @GetMapping("/filtrar")
+    public ResponseEntity<Page<PedidoDTO>> filtrarPedidos(
+            @RequestParam(required = false) EstadoPedido estado,
+            @RequestParam(required = false) Long idUsuario,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHasta,
+            @RequestParam(required = false) BigDecimal montoMin,
+            @RequestParam(required = false) BigDecimal montoMax,
+            Pageable pageable) {
+        return ResponseEntity.ok(
+            pedidoService.filtrarPedidos(estado, idUsuario, fechaDesde, fechaHasta, montoMin, montoMax, pageable)
+        );
+    }
+
+    // Filtrar los pedidos del usuario logueado con paginación (cliente)
+    // Ejemplo: GET /api/pedidos/mis-pedidos/filtrar?estado=ENVIADO&page=0&size=5
+    @GetMapping("/mis-pedidos/filtrar")
+    public ResponseEntity<Page<PedidoDTO>> filtrarMisPedidos(
+            @RequestParam(required = false) EstadoPedido estado,
+            Authentication auth,
+            Pageable pageable) {
+        return ResponseEntity.ok(pedidoService.filtrarMisPedidos(auth.getName(), estado, pageable));
     }
 }

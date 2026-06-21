@@ -2,9 +2,13 @@ package com.meowtfit.backend.pedido.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,7 @@ import com.meowtfit.backend.pedido.entity.LineaPedido;
 import com.meowtfit.backend.pedido.entity.Pedido;
 import com.meowtfit.backend.pedido.mapper.PedidoMapper;
 import com.meowtfit.backend.pedido.repository.PedidoRepository;
+import com.meowtfit.backend.pedido.repository.PedidoSpecification;
 import com.meowtfit.backend.usuario.entity.Usuario;
 import com.meowtfit.backend.usuario.repository.UsuarioRepository;
 
@@ -147,5 +152,39 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedido.setEstado(nuevoEstado);
         return pedidoMapper.toDTO(pedidoRepository.save(pedido));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PedidoDTO> filtrarPedidos(EstadoPedido estado, Long idUsuario,
+            LocalDateTime fechaDesde, LocalDateTime fechaHasta,
+            BigDecimal montoMin, BigDecimal montoMax, Pageable pageable) {
+
+        Specification<Pedido> spec = Specification.where((Specification<Pedido>) null);
+
+        if (estado != null)
+            spec = spec.and(PedidoSpecification.hasEstado(estado));
+        if (idUsuario != null)
+            spec = spec.and(PedidoSpecification.hasUsuario(idUsuario));
+        if (fechaDesde != null || fechaHasta != null)
+            spec = spec.and(PedidoSpecification.fechaBetween(fechaDesde, fechaHasta));
+        if (montoMin != null || montoMax != null)
+            spec = spec.and(PedidoSpecification.montoTotalBetween(montoMin, montoMax));
+
+        return pedidoRepository.findAll(spec, pageable).map(pedidoMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PedidoDTO> filtrarMisPedidos(String correoUsuario, EstadoPedido estado, Pageable pageable) {
+        Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        Specification<Pedido> spec = Specification.where((Specification<Pedido>) PedidoSpecification.hasUsuario(usuario.getIdUsuario()));
+
+        if (estado != null)
+            spec = spec.and(PedidoSpecification.hasEstado(estado));
+
+        return pedidoRepository.findAll(spec, pageable).map(pedidoMapper::toDTO);
     }
 }

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -23,27 +24,45 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ComprobantePagoServiceImpl implements ComprobantePagoService {
 
     private final ComprobantePagoRepository comprobantePagoRepository;
     private final PedidoRepository pedidoRepository;
     private final ComprobantePagoMapper comprobantePagoMapper;
-    private final S3Client s3Client;
+    private final Optional<S3Client> s3Client;
 
-    @Value("${aws.s3.bucket}")
+    @Value("${aws.s3.bucket:meowtfit-imagenes}")
     private String bucket;
 
-    private static final long MAX_TAMANIO_BYTES = 10 * 1024 * 1024; // 10 MB
+    @Value("${app.upload.comprobantes-dir:uploads/comprobantes}")
+    private String uploadDir;
+
+    private static final long MAX_TAMANIO_BYTES = 10 * 1024 * 1024;
     private static final Set<String> TIPOS_PERMITIDOS = Set.of(
         "image/jpeg", "image/png", "image/jpg", "application/pdf"
     );
+
+    public ComprobantePagoServiceImpl(
+            ComprobantePagoRepository comprobantePagoRepository,
+            PedidoRepository pedidoRepository,
+            ComprobantePagoMapper comprobantePagoMapper,
+            Optional<S3Client> s3Client) {
+        this.comprobantePagoRepository = comprobantePagoRepository;
+        this.pedidoRepository = pedidoRepository;
+        this.comprobantePagoMapper = comprobantePagoMapper;
+        this.s3Client = s3Client;
+    }
 
     @Override
     @Transactional
@@ -62,17 +81,18 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
         Pedido pedido = pedidoRepository.findById(idPedido)
             .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con id: " + idPedido));
 
-        // Si ya existe un comprobante para este pedido, eliminar el anterior de S3
         Optional<ComprobantePago> existente = comprobantePagoRepository.findByPedidoIdPedido(idPedido);
         existente.ifPresent(c -> {
-            eliminarArchivoS3(c.getArchivo());
+            eliminarArchivo(c.getArchivo());
             comprobantePagoRepository.delete(c);
         });
 
-        String s3Key = subirArchivoS3(archivo, contentType);
+        String referencia = s3Client.isPresent()
+            ? subirArchivoS3(archivo, contentType)
+            : guardarArchivoEnDisco(archivo);
 
         ComprobantePago comprobante = new ComprobantePago();
-        comprobante.setArchivo(s3Key);
+        comprobante.setArchivo(referencia);
         comprobante.setTipoArchivo(contentType);
         comprobante.setPedido(pedido);
 
@@ -81,9 +101,7 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
 
     @Override
     public ComprobantePagoDTO obtenerPorId(Long idComprobante) {
-        ComprobantePago comprobante = comprobantePagoRepository.findById(idComprobante)
-            .orElseThrow(() -> new ResourceNotFoundException("Comprobante no encontrado con id: " + idComprobante));
-        return comprobantePagoMapper.toDTO(comprobante);
+        return comprobantePagoMapper.toDTO(buscarPorId(idComprobante));
     }
 
     @Override
@@ -95,50 +113,94 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
 
     @Override
     public Resource descargarArchivo(Long idComprobante) {
-        ComprobantePago comprobante = comprobantePagoRepository.findById(idComprobante)
-            .orElseThrow(() -> new ResourceNotFoundException("Comprobante no encontrado con id: " + idComprobante));
-
-        var request = GetObjectRequest.builder()
-            .bucket(bucket)
-            .key(comprobante.getArchivo())
-            .build();
-
-        return new InputStreamResource(s3Client.getObject(request));
+        ComprobantePago comprobante = buscarPorId(idComprobante);
+        return s3Client.isPresent()
+            ? descargarDeS3(comprobante.getArchivo())
+            : descargarDeDisco(comprobante.getArchivo());
     }
 
     @Override
     @Transactional
     public void eliminarComprobante(Long idComprobante) {
-        ComprobantePago comprobante = comprobantePagoRepository.findById(idComprobante)
-            .orElseThrow(() -> new ResourceNotFoundException("Comprobante no encontrado con id: " + idComprobante));
-        eliminarArchivoS3(comprobante.getArchivo());
+        ComprobantePago comprobante = buscarPorId(idComprobante);
+        eliminarArchivo(comprobante.getArchivo());
         comprobantePagoRepository.delete(comprobante);
     }
+
+    // ── helpers S3 ────────────────────────────────────────────
 
     private String subirArchivoS3(MultipartFile archivo, String contentType) {
         String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
         String key = "comprobantes/" + UUID.randomUUID() + (extension != null ? "." + extension : "");
         try {
-            var request = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .contentType(contentType)
-                .contentLength(archivo.getSize())
-                .build();
-            s3Client.putObject(request, RequestBody.fromInputStream(archivo.getInputStream(), archivo.getSize()));
+            s3Client.get().putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucket).key(key)
+                    .contentType(contentType)
+                    .contentLength(archivo.getSize())
+                    .build(),
+                RequestBody.fromInputStream(archivo.getInputStream(), archivo.getSize())
+            );
             return key;
         } catch (IOException e) {
             throw new BadRequestException("Error al subir el archivo a S3: " + e.getMessage());
         }
     }
 
-    private void eliminarArchivoS3(String key) {
+    private Resource descargarDeS3(String key) {
+        return new InputStreamResource(s3Client.get().getObject(
+            GetObjectRequest.builder().bucket(bucket).key(key).build()
+        ));
+    }
+
+    // ── helpers disco local ───────────────────────────────────
+
+    private String guardarArchivoEnDisco(MultipartFile archivo) {
+        String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
+        String nombre = UUID.randomUUID() + (extension != null ? "." + extension : "");
         try {
-            s3Client.deleteObject(DeleteObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build());
-        } catch (Exception ignored) {
+            Path dir = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(dir);
+            Files.copy(archivo.getInputStream(), dir.resolve(nombre), StandardCopyOption.REPLACE_EXISTING);
+            return nombre;
+        } catch (IOException e) {
+            throw new BadRequestException("Error al guardar el archivo: " + e.getMessage());
         }
+    }
+
+    private Resource descargarDeDisco(String nombre) {
+        try {
+            Path ruta = Paths.get(uploadDir).toAbsolutePath().normalize().resolve(nombre);
+            Resource recurso = new UrlResource(ruta.toUri());
+            if (!recurso.exists() || !recurso.isReadable()) {
+                throw new ResourceNotFoundException("No se pudo leer el archivo del comprobante");
+            }
+            return recurso;
+        } catch (MalformedURLException e) {
+            throw new ResourceNotFoundException("No se pudo leer el archivo del comprobante");
+        }
+    }
+
+    // ── helper compartido ─────────────────────────────────────
+
+    private void eliminarArchivo(String referencia) {
+        if (s3Client.isPresent()) {
+            try {
+                s3Client.get().deleteObject(
+                    DeleteObjectRequest.builder().bucket(bucket).key(referencia).build()
+                );
+            } catch (Exception ignored) {}
+        } else {
+            try {
+                Files.deleteIfExists(
+                    Paths.get(uploadDir).toAbsolutePath().normalize().resolve(referencia)
+                );
+            } catch (IOException ignored) {}
+        }
+    }
+
+    private ComprobantePago buscarPorId(Long idComprobante) {
+        return comprobantePagoRepository.findById(idComprobante)
+            .orElseThrow(() -> new ResourceNotFoundException("Comprobante no encontrado con id: " + idComprobante));
     }
 }

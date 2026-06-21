@@ -241,6 +241,18 @@ CREATE TABLE LogAuditoria (
 );
 
 -- ============================================================
+-- Tokens de reinicio de contraseña
+-- ============================================================
+
+CREATE TABLE TokenReinicioContrasena (
+    idToken         INT PRIMARY KEY AUTO_INCREMENT,
+    token           VARCHAR(255) NOT NULL UNIQUE,
+    fechaExpiracion DATETIME NOT NULL,
+    idUsuario       INT NOT NULL,
+    CONSTRAINT fk_token_reinicio_contrasena_usuario FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+);
+
+-- ============================================================
 -- ÍNDICES
 -- ============================================================
 

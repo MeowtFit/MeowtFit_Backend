@@ -183,11 +183,15 @@ CREATE TABLE ComprobantePago (
 CREATE TABLE Cotizacion (
     idCotizacion      INT PRIMARY KEY AUTO_INCREMENT,
     fecha             DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado            ENUM('PENDIENTE','APROBADA','RECHAZADA','CONTRAPROPUESTA') DEFAULT 'PENDIENTE',
+    estado            ENUM('PENDIENTE','EN_REVISION', 'APROBADA','RECHAZADA','CONTRAPROPUESTA', 'CERRADA') DEFAULT 'PENDIENTE',
     precioPresupuesto DECIMAL(10, 2),
     comentario        TEXT,
+    montoTotal        DECIMAL(10, 2),
+    descuento         DECIMAL(10, 2) DEFAULT 0,
     idUsuario         INT NOT NULL,
     idRegla           INT,
+    idPedido INT NULL,
+    FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido) ON DELETE SET NULL;
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
     FOREIGN KEY (idRegla) REFERENCES ReglaDescuento(idRegla) ON DELETE SET NULL
 );
@@ -197,12 +201,14 @@ CREATE TABLE Cotizacion (
 CREATE TABLE LineaCotizacion (
     idLineaCotizacion INT PRIMARY KEY AUTO_INCREMENT,
     cantidad          INT NOT NULL,
-    precioReferencial DECIMAL(10, 2),
+    precioUnitario    DECIMAL(10, 2) NOT NULL,
+    subtotal          DECIMAL(10, 2) NOT NULL,
+    descuentoAplicado DECIMAL(10, 2) DEFAULT 0,
     stockDestinado    INT DEFAULT 0,
     idCotizacion      INT NOT NULL,
     idVariante        INT NOT NULL,
     FOREIGN KEY (idCotizacion) REFERENCES Cotizacion(idCotizacion) ON DELETE CASCADE,
-    FOREIGN KEY (idVariante) REFERENCES VarianteProducto(idVariante)
+    FOREIGN KEY (idVariante) REFERENCES VarianteProducto(idVariante) ON DELETE RESTRICT
 );
 
 -- Tabla: Contrapropuesta (máximo 5 por cotización, validado en la capa de negocio)
@@ -263,3 +269,6 @@ CREATE INDEX idx_cotizacion_estado    ON Cotizacion(estado);
 CREATE INDEX idx_variante_producto    ON VarianteProducto(idProducto);
 CREATE INDEX idx_alerta_estado        ON AlertaAbastecimiento(estado);
 CREATE INDEX idx_regla_producto       ON ReglaDescuento(idProducto);
+CREATE INDEX idx_cotizacion_usuario_estado ON Cotizacion(idUsuario, estado);
+CREATE INDEX idx_linea_cotizacion_variante ON LineaCotizacion(idVariante);
+CREATE INDEX idx_contrapropuesta_cotizacion ON Contrapropuesta(idCotizacion);

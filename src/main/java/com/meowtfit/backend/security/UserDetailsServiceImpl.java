@@ -15,7 +15,7 @@ import com.meowtfit.backend.usuario.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
 
-// Conecta Spring Security con la tabla acl_usuario para autenticar usuarios
+// Conecta Spring Security con la tabla de usuarios para autenticar usuarios
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {

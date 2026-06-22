@@ -39,5 +39,4 @@ error_log.txt
 uploads/
 
 # Credenciales y configuración local sensible
-src/main/resources/application-dev.properties
 .env.properties

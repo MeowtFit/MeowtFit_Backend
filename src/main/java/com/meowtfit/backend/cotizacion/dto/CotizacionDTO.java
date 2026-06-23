@@ -3,7 +3,7 @@ package com.meowtfit.backend.cotizacion.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import com.meowtfit.backend.cotizacion.entity.EstadoCotizacion; 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

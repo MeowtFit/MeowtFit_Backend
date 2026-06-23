@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.meowtfit.backend.cotizacion.dto.CotizacionDTO;
 import com.meowtfit.backend.cotizacion.dto.LineaCotizacionDTO;
+import com.meowtfit.backend.cotizacion.entity.EstadoCotizacion;
 import com.meowtfit.backend.cotizacion.dto.ContrapropuestaDTO;
 import com.meowtfit.backend.cotizacion.dto.CotizacionRequestDTO;
 import com.meowtfit.backend.cotizacion.dto.LineaCotizacionRequestDTO;

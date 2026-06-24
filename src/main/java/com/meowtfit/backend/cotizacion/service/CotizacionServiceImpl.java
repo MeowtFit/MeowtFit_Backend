@@ -108,11 +108,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        // Validar que el usuario sea B2B
-        if (usuario.getRuc() == null || usuario.getRuc().isEmpty()) {
-            throw new BadRequestException("Solo clientes B2B pueden crear cotizaciones manuales");
-        }
-
         Cotizacion cotizacion = cotizacionMapper.toEntity(request);
         cotizacion.setUsuario(usuario);
         cotizacion.setEstado(EstadoCotizacion.PENDIENTE);

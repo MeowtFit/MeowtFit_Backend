@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,9 @@ public class PasswordResetService {
     private final TokenReinicioContrasenaRepository tokenRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Transactional
     public void solicitarRecuperacion(String correo) {
@@ -51,7 +55,7 @@ public class PasswordResetService {
         tokenRepository.save(token);
 
         // 3. Enviar correo (Se ejecuta asíncronamente gracias a @Async en EmailService)
-        String enlaceRecuperacion = "http://localhost:5173/recuperar-password?token=" + tokenStr;
+        String enlaceRecuperacion = frontendUrl + "/recuperar-password?token=" + tokenStr;
         String asunto = "Recuperación de Contraseña - MeowtFit";
         String cuerpoHTML = "<h3>Hola " + usuario.getNombres() + ",</h3>"
                 + "<p>Has solicitado restablecer tu contraseña.</p>"

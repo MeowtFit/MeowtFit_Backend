@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.meowtfit.backend.catalogo.entity.VarianteProducto;
 import com.meowtfit.backend.catalogo.repository.VarianteProductoRepository;
+import com.meowtfit.backend.common.service.EmailService;
 import com.meowtfit.backend.exception.BadRequestException;
 import com.meowtfit.backend.exception.ResourceNotFoundException;
 import com.meowtfit.backend.pedido.dto.LineaPedidoRequestDTO;
@@ -38,6 +39,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final VarianteProductoRepository varianteProductoRepository;
     private final UsuarioRepository usuarioRepository;
     private final PedidoMapper pedidoMapper;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -125,7 +127,7 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     @Transactional
-    public PedidoDTO cambiarEstado(Long idPedido, EstadoPedido nuevoEstado) {
+    public PedidoDTO cambiarEstado(Long idPedido, EstadoPedido nuevoEstado, String motivoRechazo) {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado"));
         
@@ -151,7 +153,74 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         pedido.setEstado(nuevoEstado);
-        return pedidoMapper.toDTO(pedidoRepository.save(pedido));
+        PedidoDTO pedidoActualizado = pedidoMapper.toDTO(pedidoRepository.save(pedido));
+
+        // Obtener datos del cliente para enviar el correo
+        String correoCliente = pedido.getUsuario().getCorreo();
+        String nombreCliente = pedido.getUsuario().getNombres();
+        String codigoFormateado = "F" + String.format("%03d", idPedido);
+
+        if (nuevoEstado == EstadoPedido.CONFIRMADO) {
+            String asunto = "¡Pago Confirmado! - Pedido " + codigoFormateado;
+            String cuerpoHTML = 
+                "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e4e4e7; border-radius: 12px; padding: 24px; color: #18181b;\">"
+                + "  <div style=\"text-align: center; border-bottom: 1px solid #e4e4e7; padding-bottom: 16px; margin-bottom: 24px;\">"
+                + "    <h2 style=\"color: #087f99; margin: 0; font-size: 24px;\">MEOWTFIT</h2>"
+                + "    <p style=\"color: #71717a; margin: 4px 0 0 0; font-size: 12px;\">¡Tu estilo felino favorito está en camino!</p>"
+                + "  </div>"
+                + "  <p style=\"font-size: 16px; margin-top: 0;\">Hola <strong>" + nombreCliente + "</strong>,</p>"
+                + "  <p style=\"font-size: 14px; line-height: 1.6; color: #3f3f46;\">"
+                + "    Te informamos que hemos validado con éxito tu comprobante de pago para el <strong>Pedido " + codigoFormateado + "</strong>. "
+                + "    Su estado ha cambiado a <strong>CONFIRMADO</strong> y ya estamos preparando tus prendas para el envío."
+                + "  </p>"
+                + "  <div style=\"background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 24px 0; text-align: center;\">"
+                + "    <span style=\"font-size: 14px; color: #166534; font-weight: bold; display: block; margin-bottom: 4px;\">Monto total validado (incl. IGV)</span>"
+                + "    <span style=\"font-size: 20px; color: #15803d; font-weight: 800;\">S/ " + pedido.getMontoTotal().setScale(2) + "</span>"
+                + "  </div>"
+                + "  <p style=\"font-size: 14px; line-height: 1.6; color: #3f3f46;\">"
+                + "    Te mantendremos al tanto del estado de tu pedido cuando sea despachado y enviado a tu dirección."
+                + "  </p>"
+                + "  <p style=\"font-size: 11px; margin-top: 32px; color: #71717a; text-align: center; border-top: 1px solid #e4e4e7; padding-top: 16px;\">"
+                + "    Este es un correo automático, por favor no respondas a este mensaje.<br>"
+                + "    Meowtfit"
+                + "  </p>"
+                + "</div>";
+
+            emailService.sendEmail(correoCliente, asunto, cuerpoHTML);
+
+        } else if (nuevoEstado == EstadoPedido.PAGO_RECHAZADO) {
+            String asunto = "Acción Requerida: Pago Rechazado - Pedido " + codigoFormateado;
+            String motivoDisplay = (motivoRechazo != null && !motivoRechazo.isBlank()) ? motivoRechazo : "El comprobante no corresponde al monto o no es legible.";
+            
+            String cuerpoHTML = 
+                "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e4e4e7; border-radius: 12px; padding: 24px; color: #18181b;\">"
+                + "  <div style=\"text-align: center; border-bottom: 1px solid #e4e4e7; padding-bottom: 16px; margin-bottom: 24px;\">"
+                + "    <h2 style=\"color: #087f99; margin: 0; font-size: 24px;\">MEOWTFIT</h2>"
+                + "    <p style=\"color: #71717a; margin: 4px 0 0 0; font-size: 12px;\">Información sobre tu validación de pago</p>"
+                + "  </div>"
+                + "  <p style=\"font-size: 16px; margin-top: 0;\">Hola <strong>" + nombreCliente + "</strong>,</p>"
+                + "  <p style=\"font-size: 14px; line-height: 1.6; color: #3f3f46;\">"
+                + "    Lamentamos informarte que el comprobante de pago enviado para el <strong>Pedido " + codigoFormateado + "</strong> ha sido <strong>RECHAZADO</strong> por nuestro equipo."
+                + "  </p>"
+                + "  <div style=\"background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 16px; margin: 24px 0;\">"
+                + "    <span style=\"font-size: 13px; color: #9f1239; font-weight: bold; display: block; margin-bottom: 6px;\">Motivo del rechazo:</span>"
+                + "    <p style=\"font-size: 14px; color: #be123c; margin: 0; font-style: italic; font-family: Georgia, serif;\">"
+                + "      \"" + motivoDisplay + "\""
+                + "    </p>"
+                + "  </div>"
+                + "  <p style=\"font-size: 14px; line-height: 1.6; color: #3f3f46;\">"
+                + "    Para continuar con tu compra, por favor ingresa a tu perfil en nuestra tienda virtual, ve al detalle de tu pedido y sube un nuevo comprobante de pago válido."
+                + "  </p>"
+                + "  <p style=\"font-size: 11px; margin-top: 32px; color: #71717a; text-align: center; border-top: 1px solid #e4e4e7; padding-top: 16px;\">"
+                + "    Este es un correo automático, por favor no respondas a este mensaje.<br>"
+                + "    Meowtfit"
+                + "  </p>"
+                + "</div>";
+
+            emailService.sendEmail(correoCliente, asunto, cuerpoHTML);
+        }
+
+        return pedidoActualizado;
     }
 
     @Override

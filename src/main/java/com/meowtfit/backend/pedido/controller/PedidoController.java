@@ -58,8 +58,11 @@ public class PedidoController {
 
     // Cambiar el estado del pedido (ej. de REGISTRADO a ENVIADO)
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<PedidoDTO> cambiarEstado(@PathVariable Long id, @RequestParam EstadoPedido nuevoEstado) {
-        return ResponseEntity.ok(pedidoService.cambiarEstado(id, nuevoEstado));
+    public ResponseEntity<PedidoDTO> cambiarEstado(
+            @PathVariable Long id, 
+            @RequestParam EstadoPedido nuevoEstado,
+            @RequestParam(required = false) String motivoRechazo) {
+        return ResponseEntity.ok(pedidoService.cambiarEstado(id, nuevoEstado, motivoRechazo));
     }
 
     // Filtrar todos los pedidos con paginación (admin/comerciante)

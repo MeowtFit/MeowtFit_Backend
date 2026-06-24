@@ -14,7 +14,7 @@ public interface PedidoService {
     PedidoDTO obtenerPorId(Long idPedido);
     List<PedidoDTO> listarPorUsuario(String correoUsuario);
     List<PedidoDTO> listarTodos();
-    PedidoDTO cambiarEstado(Long idPedido, EstadoPedido nuevoEstado);
+    PedidoDTO cambiarEstado(Long idPedido, EstadoPedido nuevoEstado, String motivoRechazo);
 
     // Filtrado paginado para admin (todos los pedidos)
     Page<PedidoDTO> filtrarPedidos(EstadoPedido estado, Long idUsuario,

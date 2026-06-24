@@ -191,7 +191,7 @@ CREATE TABLE Cotizacion (
     idUsuario         INT NOT NULL,
     idRegla           INT,
     idPedido INT NULL,
-    FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido) ON DELETE SET NULL;
+    FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido) ON DELETE SET NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
     FOREIGN KEY (idRegla) REFERENCES ReglaDescuento(idRegla) ON DELETE SET NULL
 );

@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.meowtfit.backend.usuario.entity.Usuario;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,12 +32,12 @@ public class Contrapropuesta {
     @Column(name = "idContrapropuesta")
     private Long idContrapropuesta;
 
-    @Column(name = "comentario", columnDefinition = "TEXT")
-    private String comentario;
+    @Column(name = "sustento", columnDefinition = "TEXT")
+    private String sustento;
 
     @CreationTimestamp
-    @Column(name = "fecha", updatable = false)
-    private LocalDateTime fecha;
+    @Column(name = "fechaCreacion", updatable = false)
+    private LocalDateTime fechaCreacion;
 
     @Column(name = "precioNuevo", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioNuevo;
@@ -44,4 +46,8 @@ public class Contrapropuesta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idCotizacion", nullable = false)
     private Cotizacion cotizacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUserGenerador", nullable = false)
+    private Usuario userGenerador;
 }

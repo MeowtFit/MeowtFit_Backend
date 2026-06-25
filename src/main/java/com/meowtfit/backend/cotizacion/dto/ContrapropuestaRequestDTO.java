@@ -21,6 +21,7 @@ public class ContrapropuestaRequestDTO {
     @Min(value = 0, message = "El precio nuevo no puede ser negativo")
     private BigDecimal precioNuevo;
 
-    @Size(max = 500, message = "El comentario no debe exceder los 500 caracteres")
-    private String comentario;
+    @NotNull(message = "El sustento es obligatorio")
+    @Size(max = 1000, message = "El sustento no debe exceder los 1000 caracteres")
+    private String sustento;
 }

@@ -2,9 +2,16 @@
 -- correo: admin@gmail.com.pe
 -- contraseña: test1234
 INSERT INTO Usuario (nombres, correo, telefono, contrasena, estadoCuenta, rol, fechaCreacion, fechaActualizacion) VALUES
-('ABC', 'admin@gmail.com.pe', '123456789', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'ADMINISTRADOR', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('XYZ', 'XYZ@gmail.com.pe', '123456789', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'CLIENTE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('DEF', 'DEF@gmail.com.pe', '123456789', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'COMERCIANTE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('Super Admin', 'admin@gmail.com', '999888777', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'ADMINISTRADOR', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('Comerciante Juan', 'comerciante@gmail.com', '987654321', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'COMERCIANTE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- B2C Cliente
+INSERT INTO Usuario (nombres, correo, telefono, contrasena, estadoCuenta, rol, dni, fechaNacimiento, direccionEnvio, fechaCreacion, fechaActualizacion) VALUES
+('Cliente Normal', 'usuariob2c@gmail.com', '911222333', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'CLIENTE', '71234567', '1995-05-15', 'Av. Las Palmas 123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- B2B Cliente Mayorista
+INSERT INTO Usuario (nombres, correo, telefono, contrasena, estadoCuenta, rol, ruc, razonSocial, telefono2, fechaCreacion, fechaActualizacion) VALUES
+('Empresa Mayorista SAC', 'usuariob2b@gmail.com', '955444333', '$2a$10$KK4hFlseROkNV1fgqdrk1.yyxf2gjGElcvxLEY0fF1UjwFJHmzB0G', 'ACTIVO', 'CLIENTE', '20123456789', 'Distribuidora Textil Norte SAC', '01-445-6789', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO Color (nombre, hexadecimal) VALUES 
 ('Blanco', '#FFFFFF'),
@@ -52,76 +59,146 @@ INSERT INTO Producto (nombre, precioBase, estado, descripcion, imagenUrl, idCate
 -- =====================================================
 -- TABLA VARIANTEPRODUCTO (ahora con idColor)
 -- =====================================================
+
 -- Variantes para: Blusa de Seda Estampada (idProducto = 1)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 50, 0, 1),
 ('M', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 40, 5, 1),
 ('L', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 20, 0, 1),
-('S', (SELECT idColor FROM Color WHERE nombre = 'Rosa Pastel'), 30, 2, 1);
+('S', (SELECT idColor FROM Color WHERE nombre = 'Rosa Pastel'), 30, 2, 1),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Rosa Pastel'), 35, 0, 1),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Rosa Pastel'), 25, 0, 1),
+('XS', (SELECT idColor FROM Color WHERE nombre = 'Celeste'), 15, 0, 1),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Celeste'), 45, 0, 1),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Celeste'), 45, 5, 1),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Celeste'), 30, 0, 1),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Lavanda'), 20, 0, 1),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Lavanda'), 20, 0, 1);
 
 -- Variantes para: Pantalón Jean High Waist (idProducto = 2)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('28', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 100, 10, 2),
 ('30', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 80, 5, 2),
 ('32', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 60, 0, 2),
-('28', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 50, 0, 2);
+('28', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 50, 0, 2),
+('26', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 40, 0, 2),
+('34', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 45, 0, 2),
+('30', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 60, 2, 2),
+('32', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 55, 0, 2),
+('34', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 30, 0, 2),
+('28', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 40, 0, 2),
+('30', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 40, 0, 2),
+('32', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 35, 0, 2);
 
 -- Variantes para: Vestido de Noche Elegante (idProducto = 3)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Rojo Vino'), 15, 2, 3),
 ('M', (SELECT idColor FROM Color WHERE nombre = 'Rojo Vino'), 10, 0, 3),
-('M', (SELECT idColor FROM Color WHERE nombre = 'Negro Noche'), 25, 5, 3);
+('M', (SELECT idColor FROM Color WHERE nombre = 'Negro Noche'), 25, 5, 3),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Negro Noche'), 20, 0, 3),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Negro Noche'), 15, 0, 3),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Dorado'), 10, 0, 3),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Dorado'), 12, 0, 3),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Dorado'), 8, 0, 3),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Plateado'), 14, 0, 3),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Plateado'), 15, 2, 3),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Plateado'), 5, 0, 3);
 
 -- Variantes para: Casaca Cortavientos Ligera (idProducto = 4)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('Única', (SELECT idColor FROM Color WHERE nombre = 'Beige'), 45, 0, 4),
-('Única', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 60, 2, 4);
+('Única', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 60, 2, 4),
+('Única', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 50, 0, 4),
+('Única', (SELECT idColor FROM Color WHERE nombre = 'Azul'), 30, 0, 4),
+('Única', (SELECT idColor FROM Color WHERE nombre = 'Rojo'), 25, 0, 4),
+('Única', (SELECT idColor FROM Color WHERE nombre = 'Verde Olivo'), 40, 5, 4);
 
 -- Variantes para: Falda Plisada Midi (idProducto = 5)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Verde Olivo'), 35, 0, 5),
-('M', (SELECT idColor FROM Color WHERE nombre = 'Verde Olivo'), 40, 0, 5);
+('M', (SELECT idColor FROM Color WHERE nombre = 'Verde Olivo'), 40, 0, 5),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Verde Olivo'), 20, 0, 5),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 50, 0, 5),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 60, 5, 5),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 40, 0, 5),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Beige'), 30, 0, 5),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Beige'), 35, 0, 5),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Rosa Pastel'), 25, 0, 5),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Rosa Pastel'), 25, 0, 5);
 
 -- Variantes para: Top Básico Rib (idProducto = 6)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 100, 0, 6),
 ('M', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 150, 10, 6),
-('S', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 100, 5, 6);
+('L', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 80, 0, 6),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 100, 5, 6),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 120, 0, 6),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 70, 0, 6),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Rojo'), 60, 0, 6),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Rojo'), 65, 0, 6),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Celeste'), 50, 0, 6),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Celeste'), 55, 0, 6),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Amarillo'), 40, 0, 6),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Amarillo'), 45, 0, 6);
 
--- Variantes para: Polo Clásico Blanco (idProducto = 7)
+-- Variantes para: Polo Clásico (idProducto = 7)
 INSERT INTO VarianteProducto (talla, idColor, stockDisponible, stockReservado, idProducto) VALUES 
 ('S', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 80, 0, 7),
 ('M', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 120, 8, 7),
 ('L', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 90, 0, 7),
+('XL', (SELECT idColor FROM Color WHERE nombre = 'Blanco'), 40, 0, 7),
 ('M', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 60, 2, 7),
-('L', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 50, 0, 7);
+('L', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 50, 0, 7),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Azul Clásico'), 45, 0, 7),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 70, 0, 7),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 100, 0, 7),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Gris'), 80, 0, 7),
+('S', (SELECT idColor FROM Color WHERE nombre = 'Verde'), 50, 0, 7),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Verde'), 65, 0, 7),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Verde'), 45, 0, 7),
+('M', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 150, 10, 7),
+('L', (SELECT idColor FROM Color WHERE nombre = 'Negro'), 110, 5, 7);
+
+-- ============================================================
+-- CONFIGURACIÓN DEL NEGOCIO Y REGLAS DE DESCUENTO
+-- ============================================================
 
 INSERT INTO ConfiguracionNegocio (stockMinimoCotizacion, porcentajePrecioPiso) 
 VALUES (1000, 20.00);
 
 -- Descuentos para: Blusa de Seda Estampada (idProducto = 1)
--- Llevando de 12 a 49 unidades -> 5% de descuento
--- Llevando de 50 a 999 unidades -> 10% de descuento
 INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
 (12, 49, 5.00, 1),
-(50, 999, 10.00, 1);
+(50, 199, 10.00, 1),
+(200, 999, 15.00, 1);
 
 -- Descuentos para: Pantalón Jean High Waist (idProducto = 2)
--- Llevando de 6 a 24 unidades -> 8% de descuento
--- Llevando de 25 a 999 unidades -> 15% de descuento
 INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
 (6, 24, 8.00, 2),
-(25, 999, 15.00, 2);
+(25, 99, 15.00, 2),
+(100, 999, 20.00, 2);
 
 -- Descuentos para: Vestido de Noche Elegante (idProducto = 3)
--- Al ser más caro, el descuento empieza a partir de pocas unidades
 INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
 (3, 10, 5.00, 3),
-(11, 999, 12.00, 3);
+(11, 49, 12.00, 3),
+(50, 999, 18.00, 3);
+
+-- Descuentos para: Casaca Cortavientos Ligera (idProducto = 4)
+INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
+(5, 19, 5.00, 4),
+(20, 99, 10.00, 4),
+(100, 999, 15.00, 4);
+
+-- Descuentos para: Falda Plisada Midi (idProducto = 5)
+INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
+(6, 29, 6.00, 5),
+(30, 99, 12.00, 5),
+(100, 999, 18.00, 5);
 
 -- Descuentos para: Top Básico Rib (idProducto = 6)
--- Al ser un producto básico de alta rotación, requiere comprar más volumen para el descuento
 INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VALUES 
 (24, 99, 10.00, 6),
 (100, 499, 15.00, 6),
-(500, 999, 25.00, 6);
+(500, 999, 25.00, 6),
+(1000, 9999, 25.00, 7);

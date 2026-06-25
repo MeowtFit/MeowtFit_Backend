@@ -37,11 +37,6 @@ public class LineaCotizacion {
     @Column(name = "subtotal", nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
 
-    @Column(name = "descuentoAplicado", precision = 10, scale = 2)
-    private BigDecimal descuentoAplicado = BigDecimal.ZERO;
-
-    @Column(name = "stockDestinado")
-    private Integer stockDestinado = 0;
 
     // Relaciones
     @ManyToOne(fetch = FetchType.LAZY)

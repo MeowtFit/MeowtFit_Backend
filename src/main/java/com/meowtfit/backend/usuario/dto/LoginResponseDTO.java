@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class LoginResponseDTO {
     private String correo;
     private String rol;
+    private Long id; // Agrega el campo id para almacenar el ID del usuario
 }

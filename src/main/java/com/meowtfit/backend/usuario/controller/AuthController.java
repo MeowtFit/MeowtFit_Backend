@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.meowtfit.backend.usuario.dto.LoginRequestDTO;
 import com.meowtfit.backend.usuario.dto.LoginResponseDTO;
+import com.meowtfit.backend.usuario.entity.Usuario;
+import com.meowtfit.backend.usuario.repository.UsuarioRepository;
 import com.meowtfit.backend.exception.BadRequestException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthenticationManager authenticationManager;
+    private final UsuarioRepository usuarioRepository;
     // Autentica al usuario
 
     @PostMapping("/login")
@@ -40,13 +43,20 @@ public class AuthController {
             SecurityContextHolder.getContext()
         );
 
+             String email = authentication.getName();
+    
+        // Buscar el usuario real en la base de datos
+        Usuario user = usuarioRepository.findByCorreo(email)
+            .orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
+        Long userId = user.getIdUsuario();
+
         String rol = authentication.getAuthorities()
                 .stream()
                 .findFirst()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
                 .orElseThrow(() -> new BadRequestException("El usuario no tiene rol asignado"));
 
-        return ResponseEntity.ok(new LoginResponseDTO(dto.getCorreo(), rol));
+        return ResponseEntity.ok(new LoginResponseDTO(dto.getCorreo(), rol, userId)); // Incluir el ID del usuario en la respuesta));
     }
 
 }

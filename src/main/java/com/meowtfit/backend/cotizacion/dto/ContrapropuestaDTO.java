@@ -12,9 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContrapropuestaDTO {
     private Long idContrapropuesta;
-    private String comentario;
-    private LocalDateTime fecha;
+    private String sustento;
+    private LocalDateTime fechaCreacion;
     private BigDecimal precioNuevo;
 
-    private Long idCotizacion;   // Para saber a qué cotización pertenece
+    private Long idCotizacion;
+    private Long idUserGenerador;
+    private String nombreUserGenerador;
 }

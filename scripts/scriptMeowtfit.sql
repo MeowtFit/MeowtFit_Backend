@@ -177,48 +177,44 @@ CREATE TABLE ComprobantePago (
 -- ============================================================
 
 -- Tabla: Cotizacion
--- Estados: PENDIENTE (recién creada) → APROBADA (en progreso, asignando stock)
---                                    → RECHAZADA
---                                    → CONTRAPROPUESTA (negociación en curso)
 CREATE TABLE Cotizacion (
     idCotizacion      INT PRIMARY KEY AUTO_INCREMENT,
-    fecha             DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado            ENUM('PENDIENTE','EN_REVISION', 'APROBADA','RECHAZADA','CONTRAPROPUESTA', 'CERRADA') DEFAULT 'PENDIENTE',
-    precioPresupuesto DECIMAL(10, 2),
-    comentario        TEXT,
-    montoTotal        DECIMAL(10, 2),
-    descuento         DECIMAL(10, 2) DEFAULT 0,
-    idUsuario         INT NOT NULL,
-    idRegla           INT,
-    idPedido INT NULL,
-    FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido) ON DELETE SET NULL,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
-    FOREIGN KEY (idRegla) REFERENCES ReglaDescuento(idRegla) ON DELETE SET NULL
+    fechaCreacion     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado            ENUM('PENDIENTE','CONTRAPROPUESTA','RECHAZADA','CERRADA') DEFAULT 'PENDIENTE',
+    precioSugerido    DECIMAL(10, 2) NOT NULL,
+    sustento          TEXT NOT NULL,
+    montoSugerido     DECIMAL(10, 2) NOT NULL,
+    montoReal         DECIMAL(10, 2) NOT NULL,
+    idCliente         INT NOT NULL,
+    idComerciante     INT NULL,
+    idProducto        INT NOT NULL,
+    FOREIGN KEY (idCliente) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+    FOREIGN KEY (idComerciante) REFERENCES Usuario(idUsuario),
+    FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 );
 
 -- Tabla: LineaCotizacion
--- stockDestinado: unidades ya separadas físicamente para esta línea (UC Asignar Stock)
 CREATE TABLE LineaCotizacion (
     idLineaCotizacion INT PRIMARY KEY AUTO_INCREMENT,
     cantidad          INT NOT NULL,
     precioUnitario    DECIMAL(10, 2) NOT NULL,
     subtotal          DECIMAL(10, 2) NOT NULL,
-    descuentoAplicado DECIMAL(10, 2) DEFAULT 0,
-    stockDestinado    INT DEFAULT 0,
     idCotizacion      INT NOT NULL,
     idVariante        INT NOT NULL,
     FOREIGN KEY (idCotizacion) REFERENCES Cotizacion(idCotizacion) ON DELETE CASCADE,
     FOREIGN KEY (idVariante) REFERENCES VarianteProducto(idVariante) ON DELETE RESTRICT
 );
 
--- Tabla: Contrapropuesta (máximo 5 por cotización, validado en la capa de negocio)
+-- Tabla: Contrapropuesta
 CREATE TABLE Contrapropuesta (
     idContrapropuesta INT PRIMARY KEY AUTO_INCREMENT,
-    comentario        TEXT,
-    fecha             DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sustento          TEXT,
+    fechaCreacion     DATETIME DEFAULT CURRENT_TIMESTAMP,
     precioNuevo       DECIMAL(10, 2) NOT NULL,
     idCotizacion      INT NOT NULL,
-    FOREIGN KEY (idCotizacion) REFERENCES Cotizacion(idCotizacion) ON DELETE CASCADE
+    idUserGenerador   INT NOT NULL,
+    FOREIGN KEY (idCotizacion) REFERENCES Cotizacion(idCotizacion) ON DELETE CASCADE,
+    FOREIGN KEY (idUserGenerador) REFERENCES Usuario(idUsuario)
 );
 
 -- ============================================================
@@ -269,6 +265,7 @@ CREATE INDEX idx_cotizacion_estado    ON Cotizacion(estado);
 CREATE INDEX idx_variante_producto    ON VarianteProducto(idProducto);
 CREATE INDEX idx_alerta_estado        ON AlertaAbastecimiento(estado);
 CREATE INDEX idx_regla_producto       ON ReglaDescuento(idProducto);
-CREATE INDEX idx_cotizacion_usuario_estado ON Cotizacion(idUsuario, estado);
+CREATE INDEX idx_cotizacion_cliente_estado ON Cotizacion(idCliente, estado);
+CREATE INDEX idx_cotizacion_comerciante_estado ON Cotizacion(idComerciante, estado);
 CREATE INDEX idx_linea_cotizacion_variante ON LineaCotizacion(idVariante);
 CREATE INDEX idx_contrapropuesta_cotizacion ON Contrapropuesta(idCotizacion);

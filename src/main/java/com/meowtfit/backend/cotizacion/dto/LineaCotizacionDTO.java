@@ -14,8 +14,6 @@ public class LineaCotizacionDTO {
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;
-    private BigDecimal descuentoAplicado;
-    private Integer stockDestinado;
 
     // Relaciones
     private Long idCotizacion;          // Opcional, pero útil para mapeo

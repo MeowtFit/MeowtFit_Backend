@@ -1,13 +1,11 @@
 package com.meowtfit.backend.cotizacion.mapper;
 
-import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.meowtfit.backend.cotizacion.dto.CotizacionDTO;
 import com.meowtfit.backend.cotizacion.dto.LineaCotizacionDTO;
-import com.meowtfit.backend.cotizacion.entity.EstadoCotizacion;
 import com.meowtfit.backend.cotizacion.dto.ContrapropuestaDTO;
 import com.meowtfit.backend.cotizacion.dto.CotizacionRequestDTO;
 import com.meowtfit.backend.cotizacion.dto.LineaCotizacionRequestDTO;
@@ -29,26 +27,29 @@ public class CotizacionMapper {
 
         CotizacionDTO dto = new CotizacionDTO();
         dto.setIdCotizacion(cotizacion.getIdCotizacion());
-        dto.setFecha(cotizacion.getFecha());
+        dto.setFechaCreacion(cotizacion.getFechaCreacion());
         dto.setEstado(cotizacion.getEstado());
-        dto.setPrecioPresupuesto(cotizacion.getPrecioPresupuesto());
-        dto.setComentario(cotizacion.getComentario());
-        dto.setMontoTotal(cotizacion.getMontoTotal());
-        dto.setDescuento(cotizacion.getDescuento());
+        dto.setPrecioSugerido(cotizacion.getPrecioSugerido());
+        dto.setSustento(cotizacion.getSustento());
+        dto.setMontoSugerido(cotizacion.getMontoSugerido());
+        dto.setMontoReal(cotizacion.getMontoReal());
 
         // Relaciones
-        Usuario usuario = cotizacion.getUsuario();
-        if (usuario != null) {
-            dto.setIdUsuario(usuario.getIdUsuario());
-            dto.setNombreUsuario(usuario.getNombres());
+        Usuario cliente = cotizacion.getCliente();
+        if (cliente != null) {
+            dto.setIdCliente(cliente.getIdUsuario());
+            dto.setNombreCliente(cliente.getNombres());
         }
 
-        if (cotizacion.getReglaDescuento() != null) {
-            dto.setIdRegla(cotizacion.getReglaDescuento().getIdRegla());
+        Usuario comerciante = cotizacion.getComerciante();
+        if (comerciante != null) {
+            dto.setIdComerciante(comerciante.getIdUsuario());
+            dto.setNombreComerciante(comerciante.getNombres());
         }
 
-        if (cotizacion.getPedido() != null) {
-            dto.setIdPedido(cotizacion.getPedido().getIdPedido());
+        if (cotizacion.getProducto() != null) {
+            dto.setIdProducto(cotizacion.getProducto().getIdProducto());
+            dto.setNombreProducto(cotizacion.getProducto().getNombre());
         }
 
         // Líneas
@@ -74,8 +75,6 @@ public class CotizacionMapper {
         dto.setCantidad(linea.getCantidad());
         dto.setPrecioUnitario(linea.getPrecioUnitario());
         dto.setSubtotal(linea.getSubtotal());
-        dto.setDescuentoAplicado(linea.getDescuentoAplicado());
-        dto.setStockDestinado(linea.getStockDestinado());
 
         VarianteProducto variante = linea.getVarianteProducto();
         if (variante != null) {
@@ -98,10 +97,16 @@ public class CotizacionMapper {
     private ContrapropuestaDTO toContrapropuestaDTO(Contrapropuesta contra) {
         ContrapropuestaDTO dto = new ContrapropuestaDTO();
         dto.setIdContrapropuesta(contra.getIdContrapropuesta());
-        dto.setComentario(contra.getComentario());
-        dto.setFecha(contra.getFecha());
+        dto.setSustento(contra.getSustento());
+        dto.setFechaCreacion(contra.getFechaCreacion());
         dto.setPrecioNuevo(contra.getPrecioNuevo());
         dto.setIdCotizacion(contra.getCotizacion() != null ? contra.getCotizacion().getIdCotizacion() : null);
+        
+        if (contra.getUserGenerador() != null) {
+            dto.setIdUserGenerador(contra.getUserGenerador().getIdUsuario());
+            dto.setNombreUserGenerador(contra.getUserGenerador().getNombres());
+        }
+        
         return dto;
     }
 
@@ -111,11 +116,9 @@ public class CotizacionMapper {
         if (request == null) return null;
 
         Cotizacion cotizacion = new Cotizacion();
-        // id, fecha, estado se generan automáticamente
-        cotizacion.setComentario(request.getComentario());
-        cotizacion.setDescuento(request.getDescuento() != null ? request.getDescuento() : BigDecimal.ZERO);
-        // Las relaciones (usuario, regla, pedido) se deben setear externamente en el servicio
-        // porque necesitamos cargar las entidades desde la BD
+        cotizacion.setPrecioSugerido(request.getPrecioSugerido());
+        cotizacion.setSustento(request.getSustento());
+        
         return cotizacion;
     }
 
@@ -124,11 +127,6 @@ public class CotizacionMapper {
 
         LineaCotizacion linea = new LineaCotizacion();
         linea.setCantidad(request.getCantidad());
-        linea.setPrecioUnitario(request.getPrecioUnitario());
-        linea.setDescuentoAplicado(request.getDescuentoAplicado() != null ? request.getDescuentoAplicado() : BigDecimal.ZERO);
-        // El subtotal se calcula en el servicio (cantidad * precioUnitario - descuento)
-        // stockDestinado inicia en 0
-        // La variante y la cotización se setean externamente
         return linea;
     }
 
@@ -137,8 +135,7 @@ public class CotizacionMapper {
 
         Contrapropuesta contra = new Contrapropuesta();
         contra.setPrecioNuevo(request.getPrecioNuevo());
-        contra.setComentario(request.getComentario());
-        // La cotización se setea externamente
+        contra.setSustento(request.getSustento());
         return contra;
     }
 }

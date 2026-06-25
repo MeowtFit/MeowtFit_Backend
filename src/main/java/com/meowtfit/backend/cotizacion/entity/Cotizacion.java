@@ -7,9 +7,8 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.meowtfit.backend.pedido.entity.Pedido;
 import com.meowtfit.backend.usuario.entity.Usuario;
-import com.meowtfit.backend.catalogo.entity.ReglaDescuento; 
+import com.meowtfit.backend.catalogo.entity.Producto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,37 +42,37 @@ public class Cotizacion {
     private Long idCotizacion;
 
     @CreationTimestamp
-    @Column(name = "fecha", updatable = false)
-    private LocalDateTime fecha;
+    @Column(name = "fechaCreacion", updatable = false)
+    private LocalDateTime fechaCreacion;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
     private EstadoCotizacion estado = EstadoCotizacion.PENDIENTE;
 
-    @Column(name = "precioPresupuesto", precision = 10, scale = 2)
-    private BigDecimal precioPresupuesto;
+    @Column(name = "precioSugerido", precision = 10, scale = 2, nullable = false)
+    private BigDecimal precioSugerido;
 
-    @Column(name = "comentario", columnDefinition = "TEXT")
-    private String comentario;
+    @Column(name = "sustento", columnDefinition = "TEXT", nullable = false)
+    private String sustento;
 
-    @Column(name = "montoTotal", precision = 10, scale = 2)
-    private BigDecimal montoTotal;
+    @Column(name = "montoSugerido", precision = 10, scale = 2, nullable = false)
+    private BigDecimal montoSugerido;
 
-    @Column(name = "descuento", precision = 10, scale = 2)
-    private BigDecimal descuento = BigDecimal.ZERO;
+    @Column(name = "montoReal", precision = 10, scale = 2, nullable = false)
+    private BigDecimal montoReal;
 
     // Relaciones
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "idCliente", nullable = false)
+    private Usuario cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idRegla")
-    private ReglaDescuento reglaDescuento;
+    @JoinColumn(name = "idComerciante")
+    private Usuario comerciante;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idPedido")
-    private Pedido pedido;  // Opcional: se vincula si el pedido generó esta cotización
+    @JoinColumn(name = "idProducto", nullable = false)
+    private Producto producto;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -95,6 +94,4 @@ public class Cotizacion {
         contrapropuestas.add(contrapropuesta);
         contrapropuesta.setCotizacion(this);
     }
-
-   
 }

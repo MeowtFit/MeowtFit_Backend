@@ -13,19 +13,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CotizacionDTO {
     private Long idCotizacion;
-    private LocalDateTime fecha;
+    private LocalDateTime fechaCreacion;
     private EstadoCotizacion estado;
-    private BigDecimal precioPresupuesto;
-    private String comentario;
-    private BigDecimal montoTotal;
-    private BigDecimal descuento;
+    private BigDecimal precioSugerido;
+    private String sustento;
+    private BigDecimal montoSugerido;
+    private BigDecimal montoReal;
 
     // Relaciones (IDs y datos adicionales para el frontend)
-    private Long idUsuario;
-    private String nombreUsuario;          // Extra: nombre del cliente
-    private Long idRegla;                  // Puede ser null
-    private Long idPedido;                 // Puede ser null
+    private Long idCliente;
+    private String nombreCliente;
+    private Long idComerciante;
+    private String nombreComerciante;
+    private Long idProducto;
+    private String nombreProducto;
 
     private List<LineaCotizacionDTO> lineas;
-    private List<ContrapropuestaDTO> contrapropuestas; // Opcional, puede incluirse o no
+    private List<ContrapropuestaDTO> contrapropuestas; 
 }

@@ -202,3 +202,28 @@ INSERT INTO ReglaDescuento (rangoMinimo, rangoMaximo, porcentaje, idProducto) VA
 (100, 499, 15.00, 6),
 (500, 999, 25.00, 6),
 (1000, 9999, 25.00, 7);
+
+INSERT INTO meowtfit.Color (nombre, hexadecimal) VALUES 
+('Crimson', '#DC143C'),
+('FireBrick', '#B22222'),
+('DeepPink', '#FF1493'),
+('MediumVioletRed', '#C71585'),
+('OrangeRed', '#FF4500'),
+('Fuchsia', '#FF00FF'),
+('MediumOrchid', '#BA55D3'),
+('RebeccaPurple', '#663399'),
+('DarkMagenta', '#8B008B'),
+('Indigo', '#ADFF2F'),
+('GreenYellow', '#FF0000'),
+('LimeGreen', '#32CD32'),
+('PaleGreen', '#98FB98'),
+('ForestGreen', '#228B22'),
+('Teal', '#008080'),
+('Aqua', '#00FFFF'),
+('SteelBlue', '#4682B4'),
+('RoyalBlue', '#4169E1'),
+('Navy', '#000080'),
+('SaddleBrown', '#8B4513'),
+('Maroon', '#800000'),
+('MintCream', '#F5FFFA'),
+('MistyRose', '#FFE4E1');

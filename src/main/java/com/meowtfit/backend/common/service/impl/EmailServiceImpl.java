@@ -1,5 +1,6 @@
 package com.meowtfit.backend.common.service.impl;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -12,9 +13,12 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// Implementación real vía SMTP — solo se activa con app.mail.enabled=true
+// (siempre true en prod; opcional en dev, ver EmailServiceLogImpl para el modo local sin credenciales)
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(prefix = "app.mail", name = "enabled", havingValue = "true")
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;

@@ -1,0 +1,31 @@
+# MySQL local para desarrollo — reemplaza la instancia RDS/nube que se usaba en despliegue.
+# Uso:
+#   docker compose up -d      # levanta MySQL en localhost:3306 con el esquema y el seed cargados
+#   docker compose down       # apaga (los datos persisten en el volumen meowtfit_mysql_data)
+#   docker compose down -v    # apaga y borra los datos, para volver a empezar de cero
+#
+# Credenciales por defecto (coinciden con .env.properties.example): root / root, BD "meowtfit".
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: meowtfit-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: meowtfit
+    ports:
+      - "3306:3306"
+    volumes:
+      - meowtfit_mysql_data:/var/lib/mysql
+      # Los scripts de docker-entrypoint-initdb.d solo corren la PRIMERA vez que se crea el
+      # volumen. Se ejecutan en orden alfabético: primero el esquema, luego los datos de prueba.
+      - ./scripts/scriptMeowtfit.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./scripts/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  meowtfit_mysql_data:

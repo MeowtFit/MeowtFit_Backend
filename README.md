@@ -1,12 +1,12 @@
 # MeowtFit — Backend
 
-API REST del sistema MeowtFit (catálogo, carrito, cotizaciones B2B, pedidos, pagos y usuarios), construida con **Spring Boot 4 / Java 21**.
+API REST del sistema MeowtFit (catálogo, carrito, cotizaciones B2B, pedidos, pagos y usuarios), construida con **Spring Boot 4 / Java 26**.
 
 El proyecto está pensado para desplegarse en la nube (RDS, S3, API Gateway), pero **corre completo en local sin ninguna cuenta de AWS ni de Gmail**: por defecto los archivos se guardan en disco y los correos se registran en el log en vez de enviarse.
 
 ## Requisitos
 
-- **Java 21** (JDK)
+- **Java 26** (JDK)
 - **MySQL 8** — local, o vía Docker (ver abajo)
 - No necesitas instalar Maven: el proyecto trae el wrapper (`mvnw` / `mvnw.cmd`)
 - Docker Desktop (opcional, solo si quieres levantar MySQL con un comando)
